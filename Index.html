@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Varun Sathi</title>
+<style>
+  :root {
+    --primary: #1a73e8;
+    --bg: #fafafa;
+    --card: #ffffff;
+    --text: #111;
+    --radius: 16px;
+    --shadow: 0 4px 14px rgba(0,0,0,0.06);
+  }
+  body {
+    margin: 0;
+    background: var(--bg);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card);
+    padding: 14px 26px;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 99;
+    border-radius: 0 0 var(--radius) var(--radius);
+  }
+  .navbar a {
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 500;
+    margin-left: 20px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: 0.15s ease;
+    cursor: pointer;
+  }
+  .navbar a:hover {
+    background: #f0f0f0;
+  }
+  .section {
+    display: none;
+    padding: 40px 20px;
+    max-width: 750px;
+    margin: auto;
+  }
+  .active {
+    display: block;
+  }
+  .form-box {
+    background: var(--card);
+    padding: 28px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #dcdcdc;
+    margin-top: 10px;
+    background: #fff;
+    font-size: 15px;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border: 1px solid var(--primary);
+    box-shadow: 0 0 0 2px rgba(26,115,232,0.15);
+  }
+  button {
+    width: 100%;
+    padding: 14px;
+    background: var(--text);
+    color: #fff;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+  button:hover {
+    background: #000;
+  }
+  .forum-item {
+    background: var(--card);
+    padding: 20px;
+    margin-top: 18px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div style="font-size:20px;font-weight:700;color:var(--primary);">Varun Sathi</div>
+  <div>
+    <a onclick="show('home')">Home</a>
+    <a onclick="show('complaint')">Complaint</a>
+    <a onclick="show('forum')">Forum</a>
+  </div>
+</div>
+
+<!-- HOME -->
+<div id="home" class="section active">
+  <h1 style="text-align:center;color:var(--primary);font-size:40px;font-weight:700;">Welcome to Varun Sathi</h1>
+  <p style="text-align:center;color:#555;font-size:18px;">Community-driven water & drainage issue reporting platform</p>
+</div>
+
+<!-- COMPLAINT PAGE -->
+<div id="complaint" class="section">
+  <h2 style="text-align:center;color:var(--primary);">Submit Complaint</h2>
+  <div class="form-box">
+    <form id="complaintForm">
+      <label>Name</label>
+      <input name="name" required>
+
+      <label>Phone</label>
+      <input name="phone" required>
+
+      <label>Address</label>
+      <input name="address" required>
+
+      <label>City</label>
+      <input name="city" required>
+
+      <label>State</label>
+      <input name="state" required>
+
+      <label>Pincode</label>
+      <input name="pin" required>
+
+      <label>Problem</label>
+      <select name="problem" required>
+        <option value="">Select problem</option>
+        <option>Less water flow</option>
+        <option>Dirty water</option>
+        <option>Drain overflow</option>
+        <option>Clogged drain</option>
+        <option>Others</option>
+      </select>
+
+      <label>Additional Details</label>
+      <textarea name="details"></textarea>
+
+      <button type="submit">Submit Complaint</button>
+    </form>
+  </div>
+</div>
+
+<!-- FORUM PAGE -->
+<div id="forum" class="section">
+  <h2 style="text-align:center;color:var(--primary);">Public Forum</h2>
+  <div class="form-box">
+    <form id="forumForm">
+      <label>Your Name</label>
+      <input name="name" required>
+
+      <label>Location</label>
+      <input name="location" required>
+
+      <label>Problem</label>
+      <textarea name="message" required></textarea>
+
+      <button type="submit">Post to Forum</button>
+    </form>
+  </div>
+
+  <div class="forum-list" id="forumList"></div>
+</div>
+
+<script>
+function show(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+let forumData = [];
+
+// FORUM SUBMIT
+const forumForm = document.getElementById("forumForm");
+forumForm.addEventListener("submit", e => {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(forumForm).entries());
+  forumData.push(data);
+  renderForum();
+  forumForm.reset();
+});
+
+function renderForum(){
+  const list = document.getElementById("forumList");
+  list.innerHTML = "";
+  forumData.forEach(f=>{
+    list.innerHTML += `
+      <div class="forum-item">
+        <h3>${f.name}</h3>
+        <p><strong>Location:</strong> ${f.location}</p>
+        <p>${f.message}</p>
+      </div>
+    `;
+  });
+}
+
+// COMPLAINT → GOOGLE SHEET + FORUM
+const complaintForm = document.getElementById("complaintForm");
+complaintForm.addEventListener("submit", e => {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(complaintForm).entries());
+
+  // Send to Google Sheets
+  fetch("https://script.google.com/macros/s/AKfycbyYXphQuCSBYYGQKQawzvK3juqA2V1DGoLo49XGn6F9fk_xeSLDlZLuGD8QyRxjHifH_w/exec", {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+
+  // Add to forum too
+  forumData.push({
+    name: data.name,
+    location: data.city + ", " + data.state,
+    message: data.problem + " - " + (data.details || "No details provided")
+  });
+
+  renderForum();
+
+  alert("Complaint submitted successfully!");
+  complaintForm.reset();
+});
+</script>
+
+</body>
+</html>
