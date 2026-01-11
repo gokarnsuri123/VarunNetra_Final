@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Varun Sathi</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+        crossorigin=""/>
   <style>
     :root {
       --primary: #2563eb;
@@ -23,7 +24,10 @@
       --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
     }
     
-    * { box-sizing: border-box; }
+    * { 
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
     
     body {
       margin: 0;
@@ -32,6 +36,8 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       color: var(--text);
       min-height: 100vh;
+      overflow-x: hidden;
+      touch-action: pan-y;
     }
     
     body::before {
@@ -52,7 +58,7 @@
       align-items: center;
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
-      padding: 16px 32px;
+      padding: 14px 20px;
       box-shadow: var(--shadow-lg);
       position: sticky;
       top: 0;
@@ -61,7 +67,7 @@
     }
     
     .navbar-title {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 800;
       background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
       -webkit-background-clip: text;
@@ -74,20 +80,38 @@
     
     .navbar-title:hover { transform: scale(1.05); }
     
+    /* Mobile-friendly horizontal scrolling navbar */
     .navbar-links {
       display: flex;
-      gap: 8px;
+      gap: 6px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding: 0 4px;
+    }
+    
+    .navbar-links::-webkit-scrollbar {
+      display: none;
     }
     
     .navbar a {
       text-decoration: none;
       color: var(--text);
       font-weight: 600;
-      font-size: 15px;
-      padding: 10px 18px;
-      border-radius: 12px;
+      font-size: 13px;
+      padding: 8px 14px;
+      border-radius: 10px;
       transition: all 0.2s ease;
       cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    
+    .navbar a.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
     }
     
     .navbar a:hover {
@@ -97,30 +121,38 @@
       box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
     }
     
+    /* Swipeable container */
+    .sections-container {
+      position: relative;
+      overflow: hidden;
+      touch-action: pan-y;
+    }
+    
     .section {
       display: none;
-      padding: 60px 24px;
+      padding: 40px 20px;
       max-width: 800px;
       margin: auto;
       position: relative;
       z-index: 1;
-      animation: fadeIn 0.5s ease;
+      animation: fadeIn 0.4s ease;
+      min-height: calc(100vh - 60px);
     }
     
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
     }
     
-    .active { display: block; }
+    .section.active { display: block; }
     
     .hero-title {
       text-align: center;
       color: white;
-      font-size: 56px;
+      font-size: 36px;
       font-weight: 900;
       margin: 0;
-      letter-spacing: -1px;
+      letter-spacing: -0.5px;
       line-height: 1.2;
       text-shadow: 0 2px 40px rgba(0,0,0,0.3);
     }
@@ -128,36 +160,34 @@
     .hero-subtitle {
       text-align: center;
       color: rgba(255,255,255,0.95);
-      font-size: 20px;
-      margin-top: 16px;
+      font-size: 16px;
+      margin-top: 12px;
       font-weight: 500;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-      line-height: 1.6;
+      padding: 0 10px;
+      line-height: 1.5;
       text-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
     
     .section-title {
       text-align: center;
       color: var(--card);
-      font-size: 36px;
+      font-size: 28px;
       font-weight: 800;
-      margin-bottom: 32px;
+      margin-bottom: 24px;
       text-shadow: 0 2px 20px rgba(0,0,0,0.1);
     }
     
     .stats-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin: 40px 0;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+      margin: 32px 0;
     }
     
     .stat-card {
       background: rgba(255,255,255,0.95);
       backdrop-filter: blur(10px);
-      padding: 24px;
+      padding: 20px;
       border-radius: var(--radius);
       text-align: center;
       box-shadow: var(--shadow-lg);
@@ -165,74 +195,71 @@
       border: 1px solid rgba(255,255,255,0.5);
     }
     
-    .stat-card:hover {
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    .stat-card:active {
+      transform: scale(0.97);
     }
     
     .stat-number {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 800;
       color: var(--primary);
       margin: 0;
     }
     
     .stat-label {
-      font-size: 14px;
+      font-size: 12px;
       color: var(--text-secondary);
-      margin-top: 8px;
+      margin-top: 6px;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
     }
     
     .home-buttons {
       display: flex;
-      justify-content: center;
-      gap: 24px;
-      margin-top: 50px;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 40px;
+      padding: 0 10px;
     }
     
     .home-btn {
       background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
       color: #fff;
-      padding: 18px 36px;
-      font-size: 17px;
+      padding: 16px 24px;
+      font-size: 16px;
       font-weight: 700;
       border-radius: var(--radius);
       cursor: pointer;
-      display: inline-flex;
+      display: flex;
       align-items: center;
+      justify-content: center;
       gap: 10px;
       box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
+      border: none;
+      width: 100%;
     }
     
-    .home-btn:hover {
-      transform: translateY(-4px) scale(1.02);
-      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.4);
+    .home-btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
     }
     
     .form-box {
       background: var(--card);
-      padding: 36px;
+      padding: 28px 20px;
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-lg);
       border: 1px solid var(--border);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     
-    .form-box:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-    }
-    
     label {
       display: block;
       font-weight: 600;
       color: var(--text);
-      margin-top: 18px;
+      margin-top: 16px;
       margin-bottom: 6px;
       font-size: 14px;
       letter-spacing: 0.3px;
@@ -243,7 +270,7 @@
       padding: 14px 16px;
       border-radius: 12px;
       border: 2px solid var(--border);
-      font-size: 15px;
+      font-size: 16px;
       font-family: 'Inter', sans-serif;
       transition: all 0.2s ease;
       background: var(--bg);
@@ -254,11 +281,10 @@
       border: 2px solid var(--primary);
       background: white;
       box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-      transform: translateY(-1px);
     }
     
     textarea {
-      min-height: 120px;
+      min-height: 100px;
       resize: vertical;
     }
     
@@ -271,17 +297,16 @@
       border: none;
       font-size: 16px;
       font-weight: 700;
-      margin-top: 28px;
+      margin-top: 24px;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
       letter-spacing: 0.5px;
       text-transform: uppercase;
     }
     
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
+    button:active {
+      transform: scale(0.98);
     }
     
     button:disabled {
@@ -291,18 +316,19 @@
     
     .location-btn {
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      padding: 12px 20px;
+      padding: 12px 16px;
       font-size: 14px;
       margin-top: 8px;
-      display: inline-flex;
+      display: flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
-      width: auto;
+      width: 100%;
       text-transform: none;
       letter-spacing: 0;
     }
     
-    .location-btn:hover {
+    .location-btn:active {
       background: linear-gradient(135deg, #059669 0%, #047857 100%);
     }
     
@@ -311,22 +337,23 @@
       background: white;
       border: 2px solid var(--border);
       border-radius: 12px;
-      max-height: 200px;
+      max-height: 250px;
       overflow-y: auto;
       display: none;
+      -webkit-overflow-scrolling: touch;
     }
     
     .location-suggestions.active { display: block; }
     
     .location-item {
-      padding: 12px 16px;
+      padding: 14px 16px;
       cursor: pointer;
       border-bottom: 1px solid var(--border);
       transition: background 0.2s ease;
     }
     
     .location-item:last-child { border-bottom: none; }
-    .location-item:hover { background: var(--bg); }
+    .location-item:active { background: var(--bg); }
     
     .location-item-main {
       font-weight: 600;
@@ -342,8 +369,8 @@
     
     .forum-item {
       background: var(--card);
-      padding: 28px;
-      margin-top: 24px;
+      padding: 24px;
+      margin-top: 20px;
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow);
       border-left: 4px solid var(--primary);
@@ -353,33 +380,28 @@
     }
     
     @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-20px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    
-    .forum-item:hover {
-      transform: translateX(8px);
-      box-shadow: var(--shadow-lg);
-      border-left-width: 6px;
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     
     .forum-item h3 {
-      margin: 0 0 12px 0;
+      margin: 0 0 10px 0;
       color: var(--primary);
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
     }
     
     .forum-item p {
-      margin: 8px 0;
+      margin: 6px 0;
       color: var(--text-secondary);
-      line-height: 1.6;
+      line-height: 1.5;
+      font-size: 14px;
     }
     
     .forum-item p:last-child {
       color: var(--text);
-      font-size: 15px;
-      margin-top: 12px;
+      font-size: 14px;
+      margin-top: 10px;
     }
     
     .forum-item strong {
@@ -389,29 +411,76 @@
     
     .input-group { position: relative; }
     
+    /* Map specific styles */
+    #mapContainer {
+      width: 100%;
+      height: 500px;
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    
+    .map-wrapper {
+      background: var(--card);
+      padding: 0;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    
+    .swipe-indicator {
+      display: none;
+      text-align: center;
+      color: rgba(255,255,255,0.7);
+      font-size: 12px;
+      margin-top: 16px;
+      padding: 8px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 20px;
+      backdrop-filter: blur(5px);
+    }
+    
     @media(max-width: 768px) {
-      .navbar { padding: 14px 20px; }
-      .navbar-title { font-size: 20px; }
-      .navbar-links { gap: 4px; }
-      .navbar a { font-size: 13px; padding: 8px 12px; }
-      .hero-title { font-size: 36px; }
-      .hero-subtitle { font-size: 16px; padding: 0 16px; }
-      .section-title { font-size: 28px; }
-      .section { padding: 40px 16px; }
-      .home-buttons { flex-direction: column; gap: 16px; padding: 0 16px; }
-      .home-btn { width: 100%; justify-content: center; padding: 16px 24px; font-size: 16px; }
-      .form-box { padding: 24px 20px; }
-      input, select, textarea { font-size: 16px; }
-      button { font-size: 15px; padding: 14px; }
-      .stats-container { grid-template-columns: 1fr; gap: 16px; }
+      .swipe-indicator { display: block; }
+      
+      .navbar { padding: 12px 16px; }
+      .navbar-title { font-size: 18px; }
+      
+      .hero-title { font-size: 32px; }
+      .hero-subtitle { font-size: 15px; }
+      .section-title { font-size: 24px; }
+      .section { padding: 30px 16px; }
+      
+      .stats-container { 
+        grid-template-columns: 1fr;
+        gap: 12px; 
+      }
+      
+      .stat-number { font-size: 26px; }
+      
+      #mapContainer { height: 400px; }
+      
+      .forum-item {
+        padding: 20px;
+        margin-top: 16px;
+      }
+      
+      .forum-item h3 { font-size: 16px; }
+      .forum-item p { font-size: 13px; }
     }
     
     @media(max-width: 480px) {
-      .navbar { padding: 12px 16px; }
-      .navbar-title { font-size: 18px; }
+      .navbar { padding: 10px 12px; }
+      .navbar-title { font-size: 16px; }
       .navbar a { font-size: 12px; padding: 6px 10px; }
-      .hero-title { font-size: 32px; }
+      
+      .hero-title { font-size: 28px; }
+      .hero-subtitle { font-size: 14px; }
+      
       .form-box { padding: 20px 16px; }
+      .section { padding: 24px 12px; }
+      
+      #mapContainer { height: 350px; }
     }
   </style>
 </head>
@@ -419,124 +488,133 @@
   <div class="navbar">
     <div class="navbar-title" onclick="resetHome()">💧 Varun Sathi</div>
     <div class="navbar-links">
-      <a onclick="show('home')">Home</a>
-      <a onclick="show('complaint')">Complaint</a>
-      <a onclick="show('forum')">Forum</a>
-      <a onclick="show('map')">Map</a>
+      <a onclick="show('home')" class="active" data-section="home">Home</a>
+      <a onclick="show('complaint')" data-section="complaint">Complaint</a>
+      <a onclick="show('forum')" data-section="forum">Forum</a>
+      <a onclick="show('map')" data-section="map">Map</a>
     </div>
   </div>
 
-  <!-- HOME -->
-  <div id="home" class="section active">
-    <h1 class="hero-title">Welcome to Varun Sathi</h1>
-    <p class="hero-subtitle">
-      Community-driven water & drainage issue reporting platform for a cleaner, healthier tomorrow
-    </p>
-    
-    <div class="stats-container">
-      <div class="stat-card">
-        <p class="stat-number" id="complaintCount">0</p>
-        <p class="stat-label">Complaints Filed</p>
-      </div>
-      <div class="stat-card">
-        <p class="stat-number" id="forumCount">0</p>
-        <p class="stat-label">Forum Posts</p>
-      </div>
-      <div class="stat-card">
-        <p class="stat-number">24/7</p>
-        <p class="stat-label">Available</p>
-      </div>
-    </div>
-    
-    <div class="home-buttons">
-      <div class="home-btn" onclick="show('complaint')">📝 Report a Problem</div>
-      <div class="home-btn" onclick="show('forum')">💬 Open Forum</div>
-    </div>
-  </div>
-
-  <!-- COMPLAINT -->
-  <div id="complaint" class="section">
-    <h2 class="section-title">Submit Complaint</h2>
-    <div class="form-box">
-      <form id="complaintForm">
-        <label>Full Name</label>
-        <input name="name" placeholder="Enter your name" required>
-        
-        <label>Phone Number</label>
-        <input name="phone" type="tel" placeholder="+91 XXXXX XXXXX" required>
-        
-        <label>Location / Address <span style="color: #ef4444;">*</span></label>
-        <div class="input-group">
-          <input id="complaintLocation" name="address" placeholder="Start typing your location..." required autocomplete="off">
-          <button type="button" class="location-btn" onclick="getGPSLocation(event, 'complaint')">📍 Use Current Location</button>
-          <div id="complaintSuggestions" class="location-suggestions"></div>
+  <div class="sections-container">
+    <!-- HOME -->
+    <div id="home" class="section active">
+      <h1 class="hero-title">Welcome to Varun Sathi</h1>
+      <p class="hero-subtitle">
+        Community-driven water & drainage issue reporting platform for a cleaner, healthier tomorrow
+      </p>
+      
+      <div class="stats-container">
+        <div class="stat-card">
+          <p class="stat-number" id="complaintCount">0</p>
+          <p class="stat-label">Complaints Filed</p>
         </div>
-        <p style="font-size: 12px; color: #64748b; margin: 4px 0 0 0;">
-          📍 GPS coordinates required for map tracking
-        </p>
-        
-        <input type="hidden" name="city" id="complaintCity">
-        <input type="hidden" name="state" id="complaintState">
-        <input type="hidden" name="pin" id="complaintPin">
-        <input type="hidden" id="complaintHasGPS" value="false">
-        
-        <label>Type of Problem</label>
-        <select name="problem" required>
-          <option value="">-- Select problem --</option>
-          <option>💧 Less water flow</option>
-          <option>🚰 Dirty water</option>
-          <option>🌊 Drain overflow</option>
-          <option>🚫 Clogged drain</option>
-          <option>❓ Others</option>
-        </select>
-        
-        <label>Additional Details</label>
-        <textarea name="details" placeholder="Describe the issue in detail..."></textarea>
-        
-        <button type="submit">Submit Complaint</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- FORUM -->
-  <div id="forum" class="section">
-    <h2 class="section-title">Public Forum</h2>
-    <div class="form-box">
-      <form id="forumForm">
-        <label>Your Name</label>
-        <input name="name" placeholder="Enter your name" required>
-        
-        <label>Location <span style="color: #ef4444;">*</span></label>
-        <div class="input-group">
-          <input id="forumLocation" name="location" placeholder="Start typing your location..." required autocomplete="off">
-          <button type="button" class="location-btn" onclick="getGPSLocation(event, 'forum')">📍 Use Current Location</button>
-          <div id="forumSuggestions" class="location-suggestions"></div>
+        <div class="stat-card">
+          <p class="stat-number" id="forumCount">0</p>
+          <p class="stat-label">Forum Posts</p>
         </div>
-        <p style="font-size: 12px; color: #64748b; margin: 4px 0 0 0;">
-          📍 GPS coordinates required for map tracking
+        <div class="stat-card">
+          <p class="stat-number">24/7</p>
+          <p class="stat-label">Available</p>
+        </div>
+      </div>
+      
+      <div class="home-buttons">
+        <button class="home-btn" onclick="show('complaint')">📝 Report a Problem</button>
+        <button class="home-btn" onclick="show('forum')">💬 Open Forum</button>
+      </div>
+      
+      <div class="swipe-indicator">👆 Tap navigation above to browse</div>
+    </div>
+
+    <!-- COMPLAINT -->
+    <div id="complaint" class="section">
+      <h2 class="section-title">Submit Complaint</h2>
+      <div class="form-box">
+        <form id="complaintForm">
+          <label>Full Name</label>
+          <input name="name" placeholder="Enter your name" required>
+          
+          <label>Phone Number</label>
+          <input name="phone" type="tel" placeholder="+91 XXXXX XXXXX" required>
+          
+          <label>Location / Address <span style="color: #ef4444;">*</span></label>
+          <div class="input-group">
+            <input id="complaintLocation" name="address" placeholder="Start typing your location..." required autocomplete="off">
+            <button type="button" class="location-btn" onclick="getGPSLocation(event, 'complaint')">📍 Use Current Location</button>
+            <div id="complaintSuggestions" class="location-suggestions"></div>
+          </div>
+          <p style="font-size: 12px; color: #64748b; margin: 4px 0 0 0;">
+            📍 GPS coordinates required for map tracking
+          </p>
+          
+          <input type="hidden" name="city" id="complaintCity">
+          <input type="hidden" name="state" id="complaintState">
+          <input type="hidden" name="pin" id="complaintPin">
+          <input type="hidden" id="complaintHasGPS" value="false">
+          
+          <label>Type of Problem</label>
+          <select name="problem" required>
+            <option value="">-- Select problem --</option>
+            <option>💧 Less water flow</option>
+            <option>🚰 Dirty water</option>
+            <option>🌊 Drain overflow</option>
+            <option>🚫 Clogged drain</option>
+            <option>❓ Others</option>
+          </select>
+          
+          <label>Additional Details</label>
+          <textarea name="details" placeholder="Describe the issue in detail..."></textarea>
+          
+          <button type="submit">Submit Complaint</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- FORUM -->
+    <div id="forum" class="section">
+      <h2 class="section-title">Public Forum</h2>
+      <div class="form-box">
+        <form id="forumForm">
+          <label>Your Name</label>
+          <input name="name" placeholder="Enter your name" required>
+          
+          <label>Location <span style="color: #ef4444;">*</span></label>
+          <div class="input-group">
+            <input id="forumLocation" name="location" placeholder="Start typing your location..." required autocomplete="off">
+            <button type="button" class="location-btn" onclick="getGPSLocation(event, 'forum')">📍 Use Current Location</button>
+            <div id="forumSuggestions" class="location-suggestions"></div>
+          </div>
+          <p style="font-size: 12px; color: #64748b; margin: 4px 0 0 0;">
+            📍 GPS coordinates required for map tracking
+          </p>
+          <input type="hidden" id="forumHasGPS" value="false">
+          
+          <label>Describe Your Problem</label>
+          <textarea name="message" placeholder="Share your water or drainage issue with the community..." required></textarea>
+          
+          <button type="submit">Post to Forum</button>
+        </form>
+      </div>
+      <div class="forum-list" id="forumList"></div>
+    </div>
+
+    <!-- MAP -->
+    <div id="map" class="section">
+      <h2 class="section-title">Problem Map</h2>
+      <div class="map-wrapper">
+        <div id="mapContainer"></div>
+      </div>
+      <div style="margin-top: 16px; text-align: center; color: white; font-size: 13px; padding: 0 10px;">
+        <p style="margin: 0; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px; backdrop-filter: blur(5px);">
+          📍 Tap on pins to see problem details
         </p>
-        <input type="hidden" id="forumHasGPS" value="false">
-        
-        <label>Describe Your Problem</label>
-        <textarea name="message" placeholder="Share your water or drainage issue with the community..." required></textarea>
-        
-        <button type="submit">Post to Forum</button>
-      </form>
-    </div>
-    <div class="forum-list" id="forumList"></div>
-  </div>
-
-  <!-- MAP -->
-  <div id="map" class="section">
-    <h2 class="section-title">Problem Map</h2>
-    <div class="form-box" style="padding: 0; overflow: hidden; height: 600px;">
-      <div id="mapContainer" style="width: 100%; height: 100%;"></div>
-    </div>
-    <div style="margin-top: 20px; text-align: center; color: white; font-size: 14px;">
-      <p style="margin: 0;">📍 Click on pins to see problem details</p>
+      </div>
     </div>
   </div>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+          crossorigin=""></script>
   <script>
   let map;
   let markers = [];
@@ -544,15 +622,97 @@
   let locationData = [];
   let debounceTimer;
   
+  // Sample Indian forum data
+  const sampleForumData = [
+    {
+      name: "Rajesh Kumar",
+      location: "Sector 14, Gurugram, Haryana",
+      message: "💧 Less water flow - Very low water pressure in our area for the past 3 days. Difficult to fill water tanks in the morning.",
+      lat: "28.4595",
+      lng: "77.0266"
+    },
+    {
+      name: "Priya Sharma",
+      location: "DLF Phase 3, Gurugram, Haryana",
+      message: "🌊 Drain overflow - The main drain near DLF Club is overflowing during rain. Creating sanitation issues.",
+      lat: "28.4931",
+      lng: "77.0930"
+    },
+    {
+      name: "Amit Patel",
+      location: "Sohna Road, Gurugram, Haryana",
+      message: "🚰 Dirty water - Tap water has become yellowish and smells bad. We suspect pipeline contamination.",
+      lat: "28.4089",
+      lng: "77.0507"
+    },
+    {
+      name: "Sunita Verma",
+      location: "Sector 56, Gurugram, Haryana",
+      message: "🚫 Clogged drain - Street drain has been clogged for 2 weeks. Water is accumulating on the road.",
+      lat: "28.4260",
+      lng: "77.0988"
+    },
+    {
+      name: "Vikram Singh",
+      location: "MG Road, Gurugram, Haryana",
+      message: "🌊 Drain overflow - Heavy waterlogging near Metropolitan Mall. Drainage system needs urgent attention.",
+      lat: "28.4744",
+      lng: "77.0850"
+    },
+    {
+      name: "Meera Reddy",
+      location: "Golf Course Road, Gurugram, Haryana",
+      message: "💧 Less water flow - No water supply for morning hours. Been going on for a week now.",
+      lat: "28.4668",
+      lng: "77.0716"
+    },
+    {
+      name: "Karan Malhotra",
+      location: "Sector 29, Gurugram, Haryana",
+      message: "🚫 Clogged drain - Drain pipe burst near community park. Foul smell spreading in the locality.",
+      lat: "28.4619",
+      lng: "77.0770"
+    },
+    {
+      name: "Anjali Gupta",
+      location: "Udyog Vihar, Gurugram, Haryana",
+      message: "🚰 Dirty water - Industrial area drainage mixing with drinking water supply. Immediate action needed!",
+      lat: "28.4944",
+      lng: "77.0850"
+    }
+  ];
+  
+  // Initialize with sample data
+  function initializeSampleData() {
+    forumData = [...sampleForumData];
+    locationData = sampleForumData.map(item => ({
+      name: item.name,
+      location: item.location,
+      message: item.message,
+      lat: item.lat,
+      lng: item.lng
+    }));
+    renderForum();
+    updateStats();
+  }
+  
   function show(id){
     document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
+    
+    // Update navbar active state
+    document.querySelectorAll('.navbar a').forEach(a => a.classList.remove('active'));
+    document.querySelector(`.navbar a[data-section="${id}"]`).classList.add('active');
+    
     window.scrollTo({top: 0, behavior: 'smooth'});
     
     if (id === 'map' && !map) {
-      initMap();
+      setTimeout(initMap, 100);
     } else if (id === 'map' && map) {
-      updateMapMarkers();
+      setTimeout(() => {
+        map.invalidateSize();
+        updateMapMarkers();
+      }, 100);
     }
   }
   
@@ -564,7 +724,16 @@
   }
   
   function initMap() {
-    map = L.map('mapContainer').setView([20.5937, 78.9629], 5);
+    if (map) return;
+    
+    // Check if Leaflet is loaded
+    if (typeof L === 'undefined') {
+      console.error('Leaflet library not loaded yet');
+      setTimeout(initMap, 500);
+      return;
+    }
+    
+    map = L.map('mapContainer').setView([28.4595, 77.0266], 11);
     
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
@@ -575,7 +744,7 @@
   }
   
   function updateMapMarkers() {
-    if (!map) return;
+    if (!map || typeof L === 'undefined') return;
     
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
@@ -585,18 +754,18 @@
         const marker = L.marker([parseFloat(item.lat), parseFloat(item.lng)]).addTo(map);
         
         const popupContent = `
-          <div style="font-family: Inter, sans-serif; min-width: 200px;">
-            <h3 style="margin: 0 0 8px 0; color: #2563eb; font-size: 16px; font-weight: 700;">
+          <div style="font-family: Inter, sans-serif; min-width: 200px; max-width: 250px;">
+            <h3 style="margin: 0 0 8px 0; color: #2563eb; font-size: 15px; font-weight: 700;">
               ${item.name}
             </h3>
-            <p style="margin: 4px 0; font-size: 13px; color: #64748b;">
+            <p style="margin: 4px 0; font-size: 12px; color: #64748b;">
               <strong>📍 Location:</strong><br/>
               ${item.location}
             </p>
-            <p style="margin: 8px 0 0 0; font-size: 13px; color: #0f172a; line-height: 1.5;">
+            <p style="margin: 8px 0 0 0; font-size: 12px; color: #0f172a; line-height: 1.5;">
               ${item.message}
             </p>
-            ${item.phone ? `<p style="margin: 6px 0 0 0; font-size: 12px; color: #64748b;">
+            ${item.phone ? `<p style="margin: 6px 0 0 0; font-size: 11px; color: #64748b;">
               📞 ${item.phone}
             </p>` : ''}
           </div>
@@ -646,7 +815,7 @@
           div.innerHTML = `
             <div class="location-item-main">${mainText}</div>
             <div class="location-item-sub">${subText}</div>
-            <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">
+            <div style="font-size: 10px; color: #9ca3af; margin-top: 4px;">
               ${item.lat?.toFixed(4)}, ${item.lon?.toFixed(4)}
             </div>
           `;
@@ -656,7 +825,7 @@
         });
         suggestionsDiv.classList.add('active');
       } else {
-        suggestionsDiv.innerHTML = '<div class="location-item"><div class="location-item-main">No matches found</div><div class="location-item-sub">Try "H No 123 Sector 14"</div></div>';
+        suggestionsDiv.innerHTML = '<div class="location-item"><div class="location-item-main">No matches found</div><div class="location-item-sub">Try "Sector 14 Gurugram"</div></div>';
         suggestionsDiv.classList.add('active');
       }
     } catch (error) {
@@ -673,15 +842,12 @@
     inputField.dataset.lat = location.lat || '';
     inputField.dataset.lng = location.lon || '';
     
-    // Mark as having GPS data
     const hasGPSField = document.getElementById(formType + 'HasGPS');
     if (hasGPSField && location.lat && location.lon) {
       hasGPSField.value = 'true';
     }
     
     if (formType === 'complaint') {
-      const complaintForm = document.getElementById('complaintForm');
-      
       document.getElementById('complaintCity').value = 'Gurugram';
       document.getElementById('complaintState').value = 'Haryana';
       document.getElementById('complaintPin').value = location.postcode || '122001';
@@ -691,12 +857,12 @@
       if (!latInput) {
         latInput = document.createElement('input');
         latInput.type = 'hidden'; latInput.id = 'complaintLat'; latInput.name = 'lat';
-        complaintForm.appendChild(latInput);
+        document.getElementById('complaintForm').appendChild(latInput);
       }
       if (!lngInput) {
         lngInput = document.createElement('input');
         lngInput.type = 'hidden'; lngInput.id = 'complaintLng'; lngInput.name = 'lng';
-        complaintForm.appendChild(lngInput);
+        document.getElementById('complaintForm').appendChild(lngInput);
       }
       latInput.value = location.lat || '';
       lngInput.value = location.lon || '';
@@ -737,7 +903,6 @@
           inputField.dataset.lat = lat;
           inputField.dataset.lng = lng;
           
-          // Mark as having GPS data
           const hasGPSField = document.getElementById(formType + 'HasGPS');
           if (hasGPSField) {
             hasGPSField.value = 'true';
@@ -796,17 +961,14 @@
     );
   }
   
-  // Function to request GPS if not already provided
   async function requestGPSIfNeeded(formType) {
     const hasGPSField = document.getElementById(formType + 'HasGPS');
     const locationInput = document.getElementById(formType + 'Location');
     
-    // Check if GPS data is already available
     if (hasGPSField && hasGPSField.value === 'true' && locationInput.dataset.lat && locationInput.dataset.lng) {
-      return true; // GPS data already exists
+      return true;
     }
     
-    // Ask user for GPS permission
     return new Promise((resolve) => {
       if (confirm('📍 GPS location is required for map tracking. Would you like to share your current location?')) {
         if (!navigator.geolocation) {
@@ -877,6 +1039,9 @@
   }
   
   document.addEventListener('DOMContentLoaded', () => {
+    // Initialize sample data
+    initializeSampleData();
+    
     const complaintInput = document.getElementById('complaintLocation');
     const forumInput = document.getElementById('forumLocation');
     
@@ -912,10 +1077,9 @@
     forumForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       
-      // Check if GPS location is provided, if not request it
       const hasGPS = await requestGPSIfNeeded('forum');
       if (!hasGPS) {
-        return; // Stop submission if GPS not provided
+        return;
       }
       
       const data = Object.fromEntries(new FormData(forumForm).entries());
@@ -973,10 +1137,9 @@
     complaintForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       
-      // Check if GPS location is provided, if not request it
       const hasGPS = await requestGPSIfNeeded('complaint');
       if (!hasGPS) {
-        return; // Stop submission if GPS not provided
+        return;
       }
       
       const data = Object.fromEntries(new FormData(complaintForm).entries());
