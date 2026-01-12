@@ -742,6 +742,8 @@
           <input type="hidden" name="city" id="complaintCity">
           <input type="hidden" name="state" id="complaintState">
           <input type="hidden" name="pin" id="complaintPin">
+          <input type="hidden" name="lat" id="complaintLat">
+          <input type="hidden" name="lng" id="complaintLng">
           <input type="hidden" id="complaintHasGPS" value="false">
           
           <label data-lang="label-problem">Type of Problem</label>
@@ -1301,21 +1303,8 @@
       document.getElementById('complaintCity').value = 'Gurugram';
       document.getElementById('complaintState').value = 'Haryana';
       document.getElementById('complaintPin').value = location.postcode || '122001';
-      
-      let latInput = document.getElementById('complaintLat');
-      let lngInput = document.getElementById('complaintLng');
-      if (!latInput) {
-        latInput = document.createElement('input');
-        latInput.type = 'hidden'; latInput.id = 'complaintLat'; latInput.name = 'lat';
-        document.getElementById('complaintForm').appendChild(latInput);
-      }
-      if (!lngInput) {
-        lngInput = document.createElement('input');
-        lngInput.type = 'hidden'; lngInput.id = 'complaintLng'; lngInput.name = 'lng';
-        document.getElementById('complaintForm').appendChild(lngInput);
-      }
-      latInput.value = location.lat || '';
-      lngInput.value = location.lon || '';
+      document.getElementById('complaintLat').value = location.lat || '';
+      document.getElementById('complaintLng').value = location.lon || '';
     }
     
     document.getElementById(formType + 'Suggestions').classList.remove('active');
@@ -1364,11 +1353,8 @@
             document.getElementById('complaintCity').value = result?.city || 'Gurugram';
             document.getElementById('complaintState').value = result?.state || 'Haryana';
             document.getElementById('complaintPin').value = result?.postcode || '122001';
-            
-            let latInput = document.getElementById('complaintLat');
-            let lngInput = document.getElementById('complaintLng');
-            if (latInput) latInput.value = lat;
-            if (lngInput) lngInput.value = lng;
+            document.getElementById('complaintLat').value = lat;
+            document.getElementById('complaintLng').value = lng;
           }
           
           const locationSetText = translations[currentLang]['gps-location-set'];
@@ -1454,11 +1440,8 @@
                 document.getElementById('complaintCity').value = result?.city || 'Gurugram';
                 document.getElementById('complaintState').value = result?.state || 'Haryana';
                 document.getElementById('complaintPin').value = result?.postcode || '122001';
-                
-                let latInput = document.getElementById('complaintLat');
-                let lngInput = document.getElementById('complaintLng');
-                if (latInput) latInput.value = lat;
-                if (lngInput) lngInput.value = lng;
+                document.getElementById('complaintLat').value = lat;
+                document.getElementById('complaintLng').value = lng;
               }
               
               resolve(true);
