@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Varun Sathi</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
         crossorigin=""/>
@@ -40,6 +41,10 @@
       touch-action: pan-y;
     }
     
+    body.hindi {
+      font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+    }
+    
     body::before {
       content: '';
       position: fixed;
@@ -66,6 +71,12 @@
       border-bottom: 1px solid var(--border);
     }
     
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
     .navbar-title {
       font-size: 20px;
       font-weight: 800;
@@ -79,6 +90,24 @@
     }
     
     .navbar-title:hover { transform: scale(1.05); }
+    
+    .lang-toggle {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+      white-space: nowrap;
+    }
+    
+    .lang-toggle:active {
+      transform: scale(0.95);
+    }
     
     /* Mobile-friendly horizontal scrolling navbar */
     .navbar-links {
@@ -271,7 +300,7 @@
       border-radius: 12px;
       border: 2px solid var(--border);
       font-size: 16px;
-      font-family: 'Inter', sans-serif;
+      font-family: inherit;
       transition: all 0.2s ease;
       background: var(--bg);
     }
@@ -440,11 +469,150 @@
       backdrop-filter: blur(5px);
     }
     
+    /* Forum Carousel */
+    .forum-carousel {
+      margin-top: 40px;
+      position: relative;
+      overflow: visible;
+      z-index: 1;
+    }
+    
+    .carousel-title {
+      text-align: center;
+      color: white;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+    
+    .carousel-container {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+      width: 100%;
+    }
+    
+    .carousel-track {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .carousel-item {
+      min-width: 100%;
+      max-width: 100%;
+      flex-shrink: 0;
+      padding: 0 20px;
+      box-sizing: border-box;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+    
+    .carousel-card {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      padding: 24px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      border-left: 4px solid var(--accent);
+      min-height: 160px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .carousel-card h3 {
+      margin: 0 0 8px 0;
+      color: var(--primary);
+      font-size: 17px;
+      font-weight: 700;
+    }
+    
+    .carousel-card .location {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .carousel-card .message {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.5;
+      margin: 0;
+    }
+    
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    
+    .carousel-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .carousel-dot.active {
+      background: white;
+      width: 24px;
+      border-radius: 4px;
+    }
+    
+    .carousel-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.9);
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: var(--primary);
+      box-shadow: var(--shadow);
+      transition: all 0.2s ease;
+      z-index: 10;
+    }
+    
+    .carousel-nav:hover {
+      background: white;
+      transform: translateY(-50%) scale(1.1);
+    }
+    
+    .carousel-nav:active {
+      transform: translateY(-50%) scale(0.95);
+    }
+    
+    .carousel-nav.prev {
+      left: 0;
+    }
+    
+    .carousel-nav.next {
+      right: 0;
+    }
+    
     @media(max-width: 768px) {
       .swipe-indicator { display: block; }
       
       .navbar { padding: 12px 16px; }
       .navbar-title { font-size: 18px; }
+      .lang-toggle { font-size: 12px; padding: 6px 12px; }
       
       .hero-title { font-size: 32px; }
       .hero-subtitle { font-size: 15px; }
@@ -467,12 +635,18 @@
       
       .forum-item h3 { font-size: 16px; }
       .forum-item p { font-size: 13px; }
+      
+      .carousel-title { font-size: 20px; }
+      .carousel-container { height: 220px; }
+      .carousel-card { padding: 20px; min-height: 180px; }
+      .carousel-nav { width: 36px; height: 36px; font-size: 18px; }
     }
     
     @media(max-width: 480px) {
       .navbar { padding: 10px 12px; }
       .navbar-title { font-size: 16px; }
       .navbar a { font-size: 12px; padding: 6px 10px; }
+      .lang-toggle { font-size: 11px; padding: 6px 10px; }
       
       .hero-title { font-size: 28px; }
       .hero-subtitle { font-size: 14px; }
@@ -486,64 +660,82 @@
 </head>
 <body>
   <div class="navbar">
-    <div class="navbar-title" onclick="resetHome()">💧 Varun Sathi</div>
+    <div class="navbar-left">
+      <div class="navbar-title" onclick="resetHome()">💧 <span data-lang="app-title">Varun Sathi</span></div>
+      <button class="lang-toggle" onclick="toggleLanguage()">
+        <span id="langText">हिंदी</span>
+      </button>
+    </div>
     <div class="navbar-links">
-      <a onclick="show('home')" class="active" data-section="home">Home</a>
-      <a onclick="show('complaint')" data-section="complaint">Complaint</a>
-      <a onclick="show('forum')" data-section="forum">Forum</a>
-      <a onclick="show('map')" data-section="map">Map</a>
+      <a onclick="show('home')" class="active" data-section="home" data-lang="nav-home">Home</a>
+      <a onclick="show('complaint')" data-section="complaint" data-lang="nav-complaint">Complaint</a>
+      <a onclick="show('forum')" data-section="forum" data-lang="nav-forum">Forum</a>
+      <a onclick="show('map')" data-section="map" data-lang="nav-map">Map</a>
     </div>
   </div>
 
   <div class="sections-container">
     <!-- HOME -->
     <div id="home" class="section active">
-      <h1 class="hero-title">Welcome to Varun Sathi</h1>
-      <p class="hero-subtitle">
+      <h1 class="hero-title" data-lang="hero-title">Welcome to Varun Sathi</h1>
+      <p class="hero-subtitle" data-lang="hero-subtitle">
         Community-driven water & drainage issue reporting platform for a cleaner, healthier tomorrow
       </p>
       
       <div class="stats-container">
         <div class="stat-card">
           <p class="stat-number" id="complaintCount">0</p>
-          <p class="stat-label">Complaints Filed</p>
+          <p class="stat-label" data-lang="stat-complaints">Complaints Filed</p>
         </div>
         <div class="stat-card">
           <p class="stat-number" id="forumCount">0</p>
-          <p class="stat-label">Forum Posts</p>
+          <p class="stat-label" data-lang="stat-posts">Forum Posts</p>
         </div>
         <div class="stat-card">
           <p class="stat-number">24/7</p>
-          <p class="stat-label">Available</p>
+          <p class="stat-label" data-lang="stat-available">Available</p>
         </div>
       </div>
       
       <div class="home-buttons">
-        <button class="home-btn" onclick="show('complaint')">📝 Report a Problem</button>
-        <button class="home-btn" onclick="show('forum')">💬 Open Forum</button>
+        <button class="home-btn" onclick="show('complaint')"><span data-lang="btn-report">📝 Report a Problem</span></button>
+        <button class="home-btn" onclick="show('forum')"><span data-lang="btn-forum">💬 Open Forum</span></button>
       </div>
       
-      <div class="swipe-indicator">👆 Tap navigation above to browse</div>
+      <!-- Forum Carousel -->
+      <div class="forum-carousel">
+        <h3 class="carousel-title" data-lang="carousel-title">Recent Reports</h3>
+        <div class="carousel-container">
+          <button class="carousel-nav prev" onclick="prevSlide()">‹</button>
+          <div class="carousel-track" id="carouselTrack"></div>
+          <button class="carousel-nav next" onclick="nextSlide()">›</button>
+        </div>
+        <div class="carousel-dots" id="carouselDots"></div>
+      </div>
+      
+      <div class="swipe-indicator" data-lang="swipe-hint">👆 Tap navigation above to browse</div>
     </div>
 
     <!-- COMPLAINT -->
     <div id="complaint" class="section">
-      <h2 class="section-title">Submit Complaint</h2>
+      <h2 class="section-title" data-lang="complaint-title">Submit Complaint</h2>
       <div class="form-box">
         <form id="complaintForm">
-          <label>Full Name</label>
-          <input name="name" placeholder="Enter your name" required>
+          <label data-lang="label-name">Full Name</label>
+          <input name="name" data-lang-placeholder="placeholder-name" placeholder="Enter your name" required>
           
-          <label>Phone Number</label>
-          <input name="phone" type="tel" placeholder="+91 XXXXX XXXXX" required>
+          <label data-lang="label-phone">Phone Number</label>
+          <input name="phone" type="tel" data-lang-placeholder="placeholder-phone" placeholder="+91 XXXXX XXXXX" required>
           
-          <label>Location / Address <span style="color: #ef4444;">*</span></label>
+          <label><span data-lang="label-location">Location / Address</span> <span style="color: #ef4444;">*</span></label>
           <div class="input-group">
-            <input id="complaintLocation" name="address" placeholder="Start typing your location..." required autocomplete="off">
-            <button type="button" class="location-btn" onclick="getGPSLocation(event, 'complaint')">📍 Use Current Location</button>
+            <input id="complaintLocation" name="address" data-lang-placeholder="placeholder-location" placeholder="Start typing your location..." required autocomplete="off">
+            <button type="button" class="location-btn" onclick="getGPSLocation(event, 'complaint')">
+              📍 <span data-lang="btn-gps">Use Current Location</span>
+            </button>
             <div id="complaintSuggestions" class="location-suggestions"></div>
           </div>
-          <p style="font-size: 12px; color: #64748b; margin: 4px 0 0 0;">
+          <p style="font-size: 12px; color: #64748b; margin: 4px 0 0 0;" data-lang="gps-note">
             📍 GPS coordinates required for map tracking
           </p>
           
@@ -552,47 +744,49 @@
           <input type="hidden" name="pin" id="complaintPin">
           <input type="hidden" id="complaintHasGPS" value="false">
           
-          <label>Type of Problem</label>
+          <label data-lang="label-problem">Type of Problem</label>
           <select name="problem" required>
-            <option value="">-- Select problem --</option>
-            <option>💧 Less water flow</option>
-            <option>🚰 Dirty water</option>
-            <option>🌊 Drain overflow</option>
-            <option>🚫 Clogged drain</option>
-            <option>❓ Others</option>
+            <option value="" data-lang="option-select">-- Select problem --</option>
+            <option data-lang="option-less-water">💧 Less water flow</option>
+            <option data-lang="option-dirty-water">🚰 Dirty water</option>
+            <option data-lang="option-overflow">🌊 Drain overflow</option>
+            <option data-lang="option-clogged">🚫 Clogged drain</option>
+            <option data-lang="option-others">❓ Others</option>
           </select>
           
-          <label>Additional Details</label>
-          <textarea name="details" placeholder="Describe the issue in detail..."></textarea>
+          <label data-lang="label-details">Additional Details</label>
+          <textarea name="details" data-lang-placeholder="placeholder-details" placeholder="Describe the issue in detail..."></textarea>
           
-          <button type="submit">Submit Complaint</button>
+          <button type="submit" data-lang="btn-submit-complaint">Submit Complaint</button>
         </form>
       </div>
     </div>
 
     <!-- FORUM -->
     <div id="forum" class="section">
-      <h2 class="section-title">Public Forum</h2>
+      <h2 class="section-title" data-lang="forum-title">Public Forum</h2>
       <div class="form-box">
         <form id="forumForm">
-          <label>Your Name</label>
-          <input name="name" placeholder="Enter your name" required>
+          <label data-lang="label-your-name">Your Name</label>
+          <input name="name" data-lang-placeholder="placeholder-name" placeholder="Enter your name" required>
           
-          <label>Location <span style="color: #ef4444;">*</span></label>
+          <label><span data-lang="label-location">Location</span> <span style="color: #ef4444;">*</span></label>
           <div class="input-group">
-            <input id="forumLocation" name="location" placeholder="Start typing your location..." required autocomplete="off">
-            <button type="button" class="location-btn" onclick="getGPSLocation(event, 'forum')">📍 Use Current Location</button>
+            <input id="forumLocation" name="location" data-lang-placeholder="placeholder-location" placeholder="Start typing your location..." required autocomplete="off">
+            <button type="button" class="location-btn" onclick="getGPSLocation(event, 'forum')">
+              📍 <span data-lang="btn-gps">Use Current Location</span>
+            </button>
             <div id="forumSuggestions" class="location-suggestions"></div>
           </div>
-          <p style="font-size: 12px; color: #64748b; margin: 4px 0 0 0;">
+          <p style="font-size: 12px; color: #64748b; margin: 4px 0 0 0;" data-lang="gps-note">
             📍 GPS coordinates required for map tracking
           </p>
           <input type="hidden" id="forumHasGPS" value="false">
           
-          <label>Describe Your Problem</label>
-          <textarea name="message" placeholder="Share your water or drainage issue with the community..." required></textarea>
+          <label data-lang="label-describe">Describe Your Problem</label>
+          <textarea name="message" data-lang-placeholder="placeholder-forum" placeholder="Share your water or drainage issue with the community..." required></textarea>
           
-          <button type="submit">Post to Forum</button>
+          <button type="submit" data-lang="btn-post">Post to Forum</button>
         </form>
       </div>
       <div class="forum-list" id="forumList"></div>
@@ -600,12 +794,12 @@
 
     <!-- MAP -->
     <div id="map" class="section">
-      <h2 class="section-title">Problem Map</h2>
+      <h2 class="section-title" data-lang="map-title">Problem Map</h2>
       <div class="map-wrapper">
         <div id="mapContainer"></div>
       </div>
       <div style="margin-top: 16px; text-align: center; color: white; font-size: 13px; padding: 0 10px;">
-        <p style="margin: 0; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px; backdrop-filter: blur(5px);">
+        <p style="margin: 0; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px; backdrop-filter: blur(5px);" data-lang="map-hint">
           📍 Tap on pins to see problem details
         </p>
       </div>
@@ -616,11 +810,152 @@
           integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
           crossorigin=""></script>
   <script>
+  // Language translations
+  const translations = {
+    en: {
+      'app-title': 'Varun Sathi',
+      'nav-home': 'Home',
+      'nav-complaint': 'Complaint',
+      'nav-forum': 'Forum',
+      'nav-map': 'Map',
+      'hero-title': 'Welcome to Varun Sathi',
+      'hero-subtitle': 'Community-driven water & drainage issue reporting platform for a cleaner, healthier tomorrow',
+      'stat-complaints': 'Complaints Filed',
+      'stat-posts': 'Forum Posts',
+      'stat-available': 'Available',
+      'btn-report': '📝 Report a Problem',
+      'btn-forum': '💬 Open Forum',
+      'swipe-hint': '👆 Tap navigation above to browse',
+      'carousel-title': 'Recent Reports',
+      'complaint-title': 'Submit Complaint',
+      'label-name': 'Full Name',
+      'label-phone': 'Phone Number',
+      'label-location': 'Location / Address',
+      'label-problem': 'Type of Problem',
+      'label-details': 'Additional Details',
+      'placeholder-name': 'Enter your name',
+      'placeholder-phone': '+91 XXXXX XXXXX',
+      'placeholder-location': 'Start typing your location...',
+      'placeholder-details': 'Describe the issue in detail...',
+      'btn-gps': 'Use Current Location',
+      'gps-note': '📍 GPS coordinates required for map tracking',
+      'option-select': '-- Select problem --',
+      'option-less-water': '💧 Less water flow',
+      'option-dirty-water': '🚰 Dirty water',
+      'option-overflow': '🌊 Drain overflow',
+      'option-clogged': '🚫 Clogged drain',
+      'option-others': '❓ Others',
+      'btn-submit-complaint': 'Submit Complaint',
+      'forum-title': 'Public Forum',
+      'label-your-name': 'Your Name',
+      'label-describe': 'Describe Your Problem',
+      'placeholder-forum': 'Share your water or drainage issue with the community...',
+      'btn-post': 'Post to Forum',
+      'map-title': 'Problem Map',
+      'map-hint': '📍 Tap on pins to see problem details',
+      'gps-detecting': '📍 Detecting...',
+      'gps-not-supported': '✕ Not Supported',
+      'gps-location-set': '✓ Location Set',
+      'gps-failed': '✕ Failed',
+      'posted-success': '✓ Posted Successfully!',
+      'complaint-success': '✓ Complaint Submitted!',
+      'location-label': '📍 Location:'
+    },
+    hi: {
+      'app-title': 'वरुण साथी',
+      'nav-home': 'होम',
+      'nav-complaint': 'शिकायत',
+      'nav-forum': 'फोरम',
+      'nav-map': 'मानचित्र',
+      'hero-title': 'वरुण साथी में आपका स्वागत है',
+      'hero-subtitle': 'स्वच्छ और स्वस्थ कल के लिए सामुदायिक जल एवं जल निकासी समस्या रिपोर्टिंग प्लेटफॉर्म',
+      'stat-complaints': 'शिकायतें दर्ज',
+      'stat-posts': 'फोरम पोस्ट',
+      'stat-available': 'उपलब्ध',
+      'btn-report': '📝 समस्या रिपोर्ट करें',
+      'btn-forum': '💬 फोरम खोलें',
+      'swipe-hint': '👆 ब्राउज़ करने के लिए ऊपर नेविगेशन टैप करें',
+      'carousel-title': 'हाल की रिपोर्ट',
+      'complaint-title': 'शिकायत दर्ज करें',
+      'label-name': 'पूरा नाम',
+      'label-phone': 'फ़ोन नंबर',
+      'label-location': 'स्थान / पता',
+      'label-problem': 'समस्या का प्रकार',
+      'label-details': 'अतिरिक्त विवरण',
+      'placeholder-name': 'अपना नाम दर्ज करें',
+      'placeholder-phone': '+91 XXXXX XXXXX',
+      'placeholder-location': 'अपना स्थान टाइप करना शुरू करें...',
+      'placeholder-details': 'समस्या का विस्तार से वर्णन करें...',
+      'btn-gps': 'वर्तमान स्थान का उपयोग करें',
+      'gps-note': '📍 मानचित्र ट्रैकिंग के लिए GPS निर्देशांक आवश्यक',
+      'option-select': '-- समस्या चुनें --',
+      'option-less-water': '💧 कम पानी का प्रवाह',
+      'option-dirty-water': '🚰 गंदा पानी',
+      'option-overflow': '🌊 नाली से पानी बह रहा है',
+      'option-clogged': '🚫 नाली बंद है',
+      'option-others': '❓ अन्य',
+      'btn-submit-complaint': 'शिकायत दर्ज करें',
+      'forum-title': 'सार्वजनिक फोरम',
+      'label-your-name': 'आपका नाम',
+      'label-describe': 'अपनी समस्या का वर्णन करें',
+      'placeholder-forum': 'समुदाय के साथ अपनी जल या जल निकासी समस्या साझा करें...',
+      'btn-post': 'फोरम पर पोस्ट करें',
+      'map-title': 'समस्या मानचित्र',
+      'map-hint': '📍 समस्या विवरण देखने के लिए पिन पर टैप करें',
+      'gps-detecting': '📍 पता लगा रहे हैं...',
+      'gps-not-supported': '✕ समर्थित नहीं',
+      'gps-location-set': '✓ स्थान सेट हो गया',
+      'gps-failed': '✕ विफल',
+      'posted-success': '✓ सफलतापूर्वक पोस्ट किया गया!',
+      'complaint-success': '✓ शिकायत दर्ज की गई!',
+      'location-label': '📍 स्थान:'
+    }
+  };
+  
+  let currentLang = 'en';
+  
+  function toggleLanguage() {
+    currentLang = currentLang === 'en' ? 'hi' : 'en';
+    document.getElementById('langText').textContent = currentLang === 'en' ? 'हिंदी' : 'English';
+    
+    // Toggle body class for font
+    if (currentLang === 'hi') {
+      document.body.classList.add('hindi');
+    } else {
+      document.body.classList.remove('hindi');
+    }
+    
+    // Update all text with data-lang attribute
+    document.querySelectorAll('[data-lang]').forEach(el => {
+      const key = el.getAttribute('data-lang');
+      if (translations[currentLang][key]) {
+        el.textContent = translations[currentLang][key];
+      }
+    });
+    
+    // Update placeholders
+    document.querySelectorAll('[data-lang-placeholder]').forEach(el => {
+      const key = el.getAttribute('data-lang-placeholder');
+      if (translations[currentLang][key]) {
+        el.placeholder = translations[currentLang][key];
+      }
+    });
+    
+    // Re-render forum to update labels
+    renderForum();
+    
+    // Re-render carousel to update labels
+    renderCarousel();
+  }
+  
   let map;
   let markers = [];
   let forumData = [];
   let locationData = [];
   let debounceTimer;
+  let currentSlide = 0;
+  let carouselInterval;
+  let carouselAutoRotate = true;
   
   // Sample Indian forum data
   const sampleForumData = [
@@ -694,6 +1029,113 @@
     }));
     renderForum();
     updateStats();
+    
+    // Delay carousel initialization slightly to ensure DOM is ready
+    setTimeout(() => {
+      renderCarousel();
+      startCarouselAutoRotate();
+    }, 100);
+  }
+  
+  // Carousel functions
+  function renderCarousel() {
+    const track = document.getElementById('carouselTrack');
+    const dots = document.getElementById('carouselDots');
+    
+    if (!track || !dots) {
+      console.log('Carousel elements not found');
+      return;
+    }
+    
+    if (forumData.length === 0) {
+      console.log('No forum data to display');
+      return;
+    }
+    
+    track.innerHTML = '';
+    dots.innerHTML = '';
+    
+    const locationLabel = translations[currentLang]['location-label'];
+    
+    forumData.forEach((item, index) => {
+      // Create carousel item
+      const carouselItem = document.createElement('div');
+      carouselItem.className = 'carousel-item';
+      carouselItem.innerHTML = `
+        <div class="carousel-card">
+          <h3>${item.name}</h3>
+          <div class="location">${locationLabel} ${item.location}</div>
+          <p class="message">${item.message}</p>
+        </div>
+      `;
+      track.appendChild(carouselItem);
+      
+      // Create dot
+      const dot = document.createElement('div');
+      dot.className = 'carousel-dot' + (index === 0 ? ' active' : '');
+      dot.onclick = () => goToSlide(index);
+      dots.appendChild(dot);
+    });
+    
+    currentSlide = 0;
+    updateCarousel();
+    console.log('Carousel rendered with', forumData.length, 'items');
+  }
+  
+  function updateCarousel() {
+    const track = document.getElementById('carouselTrack');
+    const dots = document.querySelectorAll('.carousel-dot');
+    
+    if (!track) return;
+    
+    track.style.transform = `translateX(-${currentSlide * 100}%)`;
+    
+    dots.forEach((dot, index) => {
+      if (index === currentSlide) {
+        dot.classList.add('active');
+      } else {
+        dot.classList.remove('active');
+      }
+    });
+  }
+  
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % forumData.length;
+    updateCarousel();
+    resetCarouselAutoRotate();
+  }
+  
+  function prevSlide() {
+    currentSlide = (currentSlide - 1 + forumData.length) % forumData.length;
+    updateCarousel();
+    resetCarouselAutoRotate();
+  }
+  
+  function goToSlide(index) {
+    currentSlide = index;
+    updateCarousel();
+    resetCarouselAutoRotate();
+  }
+  
+  function startCarouselAutoRotate() {
+    if (carouselInterval) {
+      clearInterval(carouselInterval);
+    }
+    carouselInterval = setInterval(() => {
+      if (carouselAutoRotate) {
+        nextSlide();
+      }
+    }, 2000); // Rotate every 2 seconds
+  }
+  
+  function resetCarouselAutoRotate() {
+    startCarouselAutoRotate();
+  }
+  
+  function stopCarouselAutoRotate() {
+    if (carouselInterval) {
+      clearInterval(carouselInterval);
+    }
   }
   
   function show(id){
@@ -705,6 +1147,13 @@
     document.querySelector(`.navbar a[data-section="${id}"]`).classList.add('active');
     
     window.scrollTo({top: 0, behavior: 'smooth'});
+    
+    // Handle carousel auto-rotate based on current section
+    if (id === 'home') {
+      startCarouselAutoRotate();
+    } else {
+      stopCarouselAutoRotate();
+    }
     
     if (id === 'map' && !map) {
       setTimeout(initMap, 100);
@@ -753,13 +1202,14 @@
       if (item.lat && item.lng) {
         const marker = L.marker([parseFloat(item.lat), parseFloat(item.lng)]).addTo(map);
         
+        const locationLabel = translations[currentLang]['location-label'];
         const popupContent = `
-          <div style="font-family: Inter, sans-serif; min-width: 200px; max-width: 250px;">
+          <div style="font-family: ${currentLang === 'hi' ? 'Noto Sans Devanagari, ' : ''}Inter, sans-serif; min-width: 200px; max-width: 250px;">
             <h3 style="margin: 0 0 8px 0; color: #2563eb; font-size: 15px; font-weight: 700;">
               ${item.name}
             </h3>
             <p style="margin: 4px 0; font-size: 12px; color: #64748b;">
-              <strong>📍 Location:</strong><br/>
+              <strong>${locationLabel}</strong><br/>
               ${item.location}
             </p>
             <p style="margin: 8px 0 0 0; font-size: 12px; color: #0f172a; line-height: 1.5;">
@@ -872,12 +1322,14 @@
   }
   
   function getGPSLocation(evt, formType) {
-    const btn = evt.target;
+    const btn = evt.target.closest('button');
     btn.disabled = true;
-    btn.textContent = '📍 Detecting...';
+    const detectingText = translations[currentLang]['gps-detecting'];
+    btn.querySelector('[data-lang="btn-gps"]').textContent = detectingText.replace('📍 ', '');
     
     if (!navigator.geolocation) {
-      btn.textContent = '✕ Not Supported';
+      const notSupportedText = translations[currentLang]['gps-not-supported'];
+      btn.querySelector('[data-lang="btn-gps"]').textContent = notSupportedText.replace('✕ ', '');
       btn.disabled = false;
       alert('Geolocation is not supported by your browser');
       return;
@@ -919,23 +1371,25 @@
             if (lngInput) lngInput.value = lng;
           }
           
-          btn.textContent = '✓ Location Set';
+          const locationSetText = translations[currentLang]['gps-location-set'];
+          btn.querySelector('[data-lang="btn-gps"]').textContent = locationSetText.replace('✓ ', '');
           btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
         } catch (error) {
           console.error('GPS error:', error);
-          btn.textContent = '✕ Failed';
+          const failedText = translations[currentLang]['gps-failed'];
+          btn.querySelector('[data-lang="btn-gps"]').textContent = failedText.replace('✕ ', '');
           alert('Failed to get address. Please try again or type manually.');
         } finally {
           setTimeout(() => {
             btn.disabled = false;
-            btn.textContent = '📍 Use Current Location';
+            btn.querySelector('[data-lang="btn-gps"]').textContent = translations[currentLang]['btn-gps'].replace('📍 ', '');
             btn.style.background = '';
           }, 2000);
         }
       },
       (error) => {
         btn.disabled = false;
-        btn.textContent = '📍 Use Current Location';
+        btn.querySelector('[data-lang="btn-gps"]').textContent = translations[currentLang]['btn-gps'].replace('📍 ', '');
         
         let errorMsg = 'Unable to get location. ';
         switch(error.code) {
@@ -1106,14 +1560,16 @@
       renderForum();
       updateStats();
       updateMapMarkers();
+      renderCarousel();
       forumForm.reset();
       document.getElementById('forumHasGPS').value = 'false';
       
       const btn = forumForm.querySelector('button[type="submit"]');
-      btn.textContent = '✓ Posted Successfully!';
+      const successText = translations[currentLang]['posted-success'];
+      btn.textContent = successText;
       btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
       setTimeout(() => {
-        btn.textContent = 'Post to Forum';
+        btn.textContent = translations[currentLang]['btn-post'];
         btn.style.background = '';
       }, 2000);
     });
@@ -1123,10 +1579,11 @@
     const list = document.getElementById("forumList");
     if (!list) return;
     list.innerHTML = "";
+    const locationLabel = translations[currentLang]['location-label'];
     [...forumData].reverse().forEach(f => {
       list.innerHTML += `<div class="forum-item">
         <h3>${f.name}</h3>
-        <p><strong>📍 Location:</strong> ${f.location}</p>
+        <p><strong>${locationLabel}</strong> ${f.location}</p>
         <p>${f.message}</p>
       </div>`;
     });
@@ -1176,13 +1633,15 @@
       renderForum();
       updateStats();
       updateMapMarkers();
+      renderCarousel();
       
       const btn = complaintForm.querySelector('button[type="submit"]');
-      btn.textContent = '✓ Complaint Submitted!';
+      const successText = translations[currentLang]['complaint-success'];
+      btn.textContent = successText;
       btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
       
       setTimeout(() => {
-        btn.textContent = 'Submit Complaint';
+        btn.textContent = translations[currentLang]['btn-submit-complaint'];
         btn.style.background = '';
         complaintForm.reset();
         document.getElementById('complaintHasGPS').value = 'false';
