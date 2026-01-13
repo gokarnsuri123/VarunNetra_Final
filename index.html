@@ -784,6 +784,8 @@
             📍 GPS coordinates required for map tracking
           </p>
           <input type="hidden" id="forumHasGPS" value="false">
+          <input type="hidden" id="forumLat">
+          <input type="hidden" id="forumLng">
           
           <label data-lang="label-describe">Describe Your Problem</label>
           <textarea name="message" data-lang-placeholder="placeholder-forum" placeholder="Share your water or drainage issue with the community..." required></textarea>
@@ -807,6 +809,43 @@
       </div>
     </div>
   </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Import Firebase SDK
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getDatabase, ref, push, set, onValue, query, limitToLast } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+    // TODO: Replace with your Firebase config
+    // Go to Firebase Console -> Project Settings -> Your apps -> Firebase SDK snippet
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    // Make Firebase accessible globally
+    window.firebaseDB = database;
+    window.firebaseRef = ref;
+    window.firebasePush = push;
+    window.firebaseSet = set;
+    window.firebaseOnValue = onValue;
+    window.firebaseQuery = query;
+    window.firebaseLimitToLast = limitToLast;
+    
+    console.log('Firebase initialized successfully!');
+    
+    // Load data on page load
+    loadDataFromFirebase();
+  </script>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
           integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
@@ -959,84 +998,77 @@
   let carouselInterval;
   let carouselAutoRotate = true;
   
-  // Sample Indian forum data
-  const sampleForumData = [
-    {
-      name: "Rajesh Kumar",
-      location: "Sector 14, Gurugram, Haryana",
-      message: "💧 Less water flow - Very low water pressure in our area for the past 3 days. Difficult to fill water tanks in the morning.",
-      lat: "28.4595",
-      lng: "77.0266"
-    },
-    {
-      name: "Priya Sharma",
-      location: "DLF Phase 3, Gurugram, Haryana",
-      message: "🌊 Drain overflow - The main drain near DLF Club is overflowing during rain. Creating sanitation issues.",
-      lat: "28.4931",
-      lng: "77.0930"
-    },
-    {
-      name: "Amit Patel",
-      location: "Sohna Road, Gurugram, Haryana",
-      message: "🚰 Dirty water - Tap water has become yellowish and smells bad. We suspect pipeline contamination.",
-      lat: "28.4089",
-      lng: "77.0507"
-    },
-    {
-      name: "Sunita Verma",
-      location: "Sector 56, Gurugram, Haryana",
-      message: "🚫 Clogged drain - Street drain has been clogged for 2 weeks. Water is accumulating on the road.",
-      lat: "28.4260",
-      lng: "77.0988"
-    },
-    {
-      name: "Vikram Singh",
-      location: "MG Road, Gurugram, Haryana",
-      message: "🌊 Drain overflow - Heavy waterlogging near Metropolitan Mall. Drainage system needs urgent attention.",
-      lat: "28.4744",
-      lng: "77.0850"
-    },
-    {
-      name: "Meera Reddy",
-      location: "Golf Course Road, Gurugram, Haryana",
-      message: "💧 Less water flow - No water supply for morning hours. Been going on for a week now.",
-      lat: "28.4668",
-      lng: "77.0716"
-    },
-    {
-      name: "Karan Malhotra",
-      location: "Sector 29, Gurugram, Haryana",
-      message: "🚫 Clogged drain - Drain pipe burst near community park. Foul smell spreading in the locality.",
-      lat: "28.4619",
-      lng: "77.0770"
-    },
-    {
-      name: "Anjali Gupta",
-      location: "Udyog Vihar, Gurugram, Haryana",
-      message: "🚰 Dirty water - Industrial area drainage mixing with drinking water supply. Immediate action needed!",
-      lat: "28.4944",
-      lng: "77.0850"
+  // Firebase functions
+  function saveToFirebase(collection, data) {
+    if (!window.firebaseDB) {
+      console.error('Firebase not initialized');
+      return;
     }
-  ];
-  
-  // Initialize with sample data
-  function initializeSampleData() {
-    forumData = [...sampleForumData];
-    locationData = sampleForumData.map(item => ({
-      name: item.name,
-      location: item.location,
-      message: item.message,
-      lat: item.lat,
-      lng: item.lng
-    }));
-    renderForum();
-    updateStats();
     
-    // Delay carousel initialization slightly to ensure DOM is ready
-    setTimeout(() => {
-      renderCarousel();
-      startCarouselAutoRotate();
-    }, 100);
+    try {
+      const dbRef = window.firebaseRef(window.firebaseDB, collection);
+      const newRef = window.firebasePush(dbRef);
+      window.firebaseSet(newRef, {
+        ...data,
+        timestamp: Date.now()
+      });
+      console.log('Data saved to Firebase:', collection);
+    } catch (error) {
+      console.error('Error saving to Firebase:', error);
+    }
+  }
+  
+  function loadDataFromFirebase() {
+    if (!window.firebaseDB) {
+      console.error('Firebase not initialized');
+      return;
+    }
+    
+    try {
+      // Load forum posts
+      const forumRef = window.firebaseRef(window.firebaseDB, 'forum');
+      const forumQuery = window.firebaseQuery(forumRef, window.firebaseLimitToLast(50));
+      
+      window.firebaseOnValue(forumQuery, (snapshot) => {
+        forumData = [];
+        locationData = [];
+        
+        snapshot.forEach((childSnapshot) => {
+          const data = childSnapshot.val();
+          forumData.push(data);
+          
+          if (data.lat && data.lng) {
+            locationData.push({
+              name: data.name,
+              location: data.location,
+              message: data.message,
+              lat: data.lat,
+              lng: data.lng,
+              phone: data.phone || ''
+            });
+          }
+        });
+        
+        renderForum();
+        updateStats();
+        renderCarousel();
+        updateMapMarkers();
+        console.log('Loaded', forumData.length, 'forum posts from Firebase');
+      });
+      
+      // Load complaints
+      const complaintsRef = window.firebaseRef(window.firebaseDB, 'complaints');
+      const complaintsQuery = window.firebaseQuery(complaintsRef, window.firebaseLimitToLast(50));
+      
+      window.firebaseOnValue(complaintsQuery, (snapshot) => {
+        let count = 0;
+        snapshot.forEach(() => count++);
+        console.log('Loaded', count, 'complaints from Firebase');
+      });
+      
+    } catch (error) {
+      console.error('Error loading from Firebase:', error);
+    }
   }
   
   // Carousel functions
@@ -1050,7 +1082,8 @@
     }
     
     if (forumData.length === 0) {
-      console.log('No forum data to display');
+      track.innerHTML = '<div class="carousel-item"><div class="carousel-card"><p style="text-align: center; color: #64748b;">No reports yet. Be the first to report!</p></div></div>';
+      dots.innerHTML = '';
       return;
     }
     
@@ -1059,7 +1092,7 @@
     
     const locationLabel = translations[currentLang]['location-label'];
     
-    forumData.forEach((item, index) => {
+    forumData.slice().reverse().slice(0, 10).forEach((item, index) => {
       // Create carousel item
       const carouselItem = document.createElement('div');
       carouselItem.className = 'carousel-item';
@@ -1081,7 +1114,7 @@
     
     currentSlide = 0;
     updateCarousel();
-    console.log('Carousel rendered with', forumData.length, 'items');
+    console.log('Carousel rendered with', Math.min(forumData.length, 10), 'items');
   }
   
   function updateCarousel() {
@@ -1102,13 +1135,17 @@
   }
   
   function nextSlide() {
-    currentSlide = (currentSlide + 1) % forumData.length;
+    const itemCount = Math.min(forumData.length, 10);
+    if (itemCount === 0) return;
+    currentSlide = (currentSlide + 1) % itemCount;
     updateCarousel();
     resetCarouselAutoRotate();
   }
   
   function prevSlide() {
-    currentSlide = (currentSlide - 1 + forumData.length) % forumData.length;
+    const itemCount = Math.min(forumData.length, 10);
+    if (itemCount === 0) return;
+    currentSlide = (currentSlide - 1 + itemCount) % itemCount;
     updateCarousel();
     resetCarouselAutoRotate();
   }
@@ -1124,10 +1161,10 @@
       clearInterval(carouselInterval);
     }
     carouselInterval = setInterval(() => {
-      if (carouselAutoRotate) {
+      if (carouselAutoRotate && forumData.length > 0) {
         nextSlide();
       }
-    }, 2000); // Rotate every 2 seconds
+    }, 3000);
   }
   
   function resetCarouselAutoRotate() {
@@ -1305,6 +1342,9 @@
       document.getElementById('complaintPin').value = location.postcode || '122001';
       document.getElementById('complaintLat').value = location.lat || '';
       document.getElementById('complaintLng').value = location.lon || '';
+    } else if (formType === 'forum') {
+      document.getElementById('forumLat').value = location.lat || '';
+      document.getElementById('forumLng').value = location.lon || '';
     }
     
     document.getElementById(formType + 'Suggestions').classList.remove('active');
@@ -1355,6 +1395,9 @@
             document.getElementById('complaintPin').value = result?.postcode || '122001';
             document.getElementById('complaintLat').value = lat;
             document.getElementById('complaintLng').value = lng;
+          } else if (formType === 'forum') {
+            document.getElementById('forumLat').value = lat;
+            document.getElementById('forumLng').value = lng;
           }
           
           const locationSetText = translations[currentLang]['gps-location-set'];
@@ -1442,6 +1485,9 @@
                 document.getElementById('complaintPin').value = result?.postcode || '122001';
                 document.getElementById('complaintLat').value = lat;
                 document.getElementById('complaintLng').value = lng;
+              } else if (formType === 'forum') {
+                document.getElementById('forumLat').value = lat;
+                document.getElementById('forumLng').value = lng;
               }
               
               resolve(true);
@@ -1476,9 +1522,6 @@
   }
   
   document.addEventListener('DOMContentLoaded', () => {
-    // Initialize sample data
-    initializeSampleData();
-    
     const complaintInput = document.getElementById('complaintLocation');
     const forumInput = document.getElementById('forumLocation');
     
@@ -1507,8 +1550,15 @@
         document.querySelectorAll('.location-suggestions').forEach(s => s.classList.remove('active'));
       }
     });
+    
+    // Start carousel after DOM is loaded
+    setTimeout(() => {
+      renderCarousel();
+      startCarouselAutoRotate();
+    }, 500);
   });
   
+  // Forum Form Submit
   document.addEventListener('DOMContentLoaded', () => {
     const forumForm = document.getElementById("forumForm");
     forumForm.addEventListener("submit", async (e) => {
@@ -1519,33 +1569,28 @@
         return;
       }
       
-      const data = Object.fromEntries(new FormData(forumForm).entries());
+      const formData = new FormData(forumForm);
+      const data = Object.fromEntries(formData.entries());
       
       const locationInput = document.getElementById('forumLocation');
-      const lat = locationInput.dataset.lat || '';
-      const lng = locationInput.dataset.lng || '';
+      const lat = document.getElementById('forumLat').value || locationInput.dataset.lat || '';
+      const lng = document.getElementById('forumLng').value || locationInput.dataset.lng || '';
       
       if (!lat || !lng) {
         alert('⚠️ GPS coordinates are required. Please use "Current Location" button or select from dropdown.');
         return;
       }
       
-      forumData.push(data);
-      
-      locationData.push({
+      const forumEntry = {
         name: data.name,
         location: data.location,
         message: data.message,
         lat: lat,
         lng: lng
-      });
+      };
       
-      renderForum();
-      updateStats();
-      updateMapMarkers();
-      renderCarousel();
-      forumForm.reset();
-      document.getElementById('forumHasGPS').value = 'false';
+      // Save to Firebase
+      saveToFirebase('forum', forumEntry);
       
       const btn = forumForm.querySelector('button[type="submit"]');
       const successText = translations[currentLang]['posted-success'];
@@ -1554,6 +1599,10 @@
       setTimeout(() => {
         btn.textContent = translations[currentLang]['btn-post'];
         btn.style.background = '';
+        forumForm.reset();
+        document.getElementById('forumHasGPS').value = 'false';
+        document.getElementById('forumLat').value = '';
+        document.getElementById('forumLng').value = '';
       }, 2000);
     });
   });
@@ -1572,6 +1621,7 @@
     });
   }
   
+  // Complaint Form Submit
   document.addEventListener('DOMContentLoaded', () => {
     const complaintForm = document.getElementById("complaintForm");
     complaintForm.addEventListener("submit", async (e) => {
@@ -1582,41 +1632,36 @@
         return;
       }
       
-      const data = Object.fromEntries(new FormData(complaintForm).entries());
+      const formData = new FormData(complaintForm);
+      const data = Object.fromEntries(formData.entries());
       
       if (!data.lat || !data.lng) {
         alert('⚠️ GPS coordinates are required. Please use "Current Location" button or select from dropdown.');
         return;
       }
       
+      // Save complaint to Firebase
+      saveToFirebase('complaints', data);
+      
+      // Also add to forum
+      const forumEntry = {
+        name: data.name,
+        location: data.address,
+        message: `${data.problem} - ${data.details || "No details provided"}`,
+        phone: data.phone,
+        lat: data.lat,
+        lng: data.lng
+      };
+      
+      saveToFirebase('forum', forumEntry);
+      
+      // Still send to Google Sheets (optional - you can remove this if you only want Firebase)
       fetch("https://script.google.com/macros/s/AKfycbyYXphQuCSBYYGQKQawzvK3juqA2V1DGoLo49XGn6F9fk_xeSLDlZLuGD8QyRxjHifH_w/exec", {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       });
-      
-      const forumEntry = {
-        name: data.name,
-        location: data.address,
-        message: `${data.problem} - ${data.details || "No details provided"}`
-      };
-      
-      forumData.push(forumEntry);
-      
-      locationData.push({
-        name: data.name,
-        location: data.address,
-        message: `${data.problem} - ${data.details || "No details provided"}`,
-        phone: data.phone,
-        lat: data.lat || '',
-        lng: data.lng || ''
-      });
-      
-      renderForum();
-      updateStats();
-      updateMapMarkers();
-      renderCarousel();
       
       const btn = complaintForm.querySelector('button[type="submit"]');
       const successText = translations[currentLang]['complaint-success'];
