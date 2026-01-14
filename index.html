@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Varun Sathi</title>
+  <title>Varun Saathi</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
@@ -657,7 +657,7 @@
 <body>
   <div class="navbar">
     <div class="navbar-left">
-      <div class="navbar-title" onclick="resetHome()">💧 <span data-lang="app-title">Varun Sathi</span></div>
+      <div class="navbar-title" onclick="resetHome()">💧 <span data-lang="app-title">Varun Saathi</span></div>
       <button class="lang-toggle" onclick="toggleLanguage()">
         <span id="langText">हिंदी</span>
       </button>
@@ -673,7 +673,7 @@
   <div class="sections-container">
     <!-- HOME -->
     <div id="home" class="section active">
-      <h1 class="hero-title" data-lang="hero-title">Welcome to Varun Sathi</h1>
+      <h1 class="hero-title" data-lang="hero-title">Welcome to Varun Saathi</h1>
       <p class="hero-subtitle" data-lang="hero-subtitle">
         Community-driven water & drainage issue reporting platform for a cleaner, healthier tomorrow
       </p>
@@ -860,12 +860,12 @@
   // Language translations
   const translations = {
     en: {
-      'app-title': 'Varun Sathi',
+      'app-title': 'Varun Saathi',
       'nav-home': 'Home',
       'nav-complaint': 'Complaint',
       'nav-forum': 'Forum',
       'nav-map': 'Map',
-      'hero-title': 'Welcome to Varun Sathi',
+      'hero-title': 'Welcome to Varun Saathi',
       'hero-subtitle': 'Community-driven water & drainage issue reporting platform for a cleaner, healthier tomorrow',
       'stat-complaints': 'Complaints Filed',
       'stat-posts': 'Forum Posts',
@@ -1561,7 +1561,7 @@
     });
   }
   
-  // Complaint Form Submit (KEEPS EXCEL LOGIC!)
+  // Complaint Form Submit (FIXED - NO LONGER SAVES TO FORUM)
   document.addEventListener('DOMContentLoaded', () => {
     const complaintForm = document.getElementById("complaintForm");
     complaintForm.addEventListener("submit", async (e) => {
@@ -1588,19 +1588,10 @@
         body: JSON.stringify(data)
       });
       
-      // 2. SAVE TO FIREBASE for real-time forum/map updates
-      const forumEntry = {
-        name: data.name,
-        location: data.address,
-        message: `${data.problem} - ${data.details || "No details provided"}`,
-        phone: data.phone,
-        lat: data.lat,
-        lng: data.lng
-      };
-      
+      // 2. SAVE TO FIREBASE - Only to complaints collection (NOT to forum)
       try {
         await saveToFirebase('complaints', data);
-        await saveToFirebase('forum', forumEntry);
+        // ✅ FIXED: Removed the line that was saving to forum
         
         const btn = complaintForm.querySelector('button[type="submit"]');
         const successText = translations[currentLang]['complaint-success'];
