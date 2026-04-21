@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2900,19 +2901,39 @@ button { font: inherit; border: 0; background: none; cursor: pointer; }
 
 <!-- FIREBASE -->
 <script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-  import { getDatabase, ref, push, set, onValue, query, limitToLast } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js';
+  import {
+    getFirestore,
+    collection, addDoc, onSnapshot,
+    query, orderBy, limit,
+    serverTimestamp
+  } from 'https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js';
+
   const cfg = {
-    apiKey: "AIzaSyCoz8_0X46RGEOSdx6LrORUWdz25hH9FlE",
-    authDomain: "varunnetra-41734.firebaseapp.com",
-    databaseURL: "https://varunnetra-41734-default-rtdb.firebaseio.com",
-    projectId: "varunnetra-41734",
-    storageBucket: "varunnetra-41734.firebasestorage.app",
-    messagingSenderId: "159673998675",
-    appId: "1:159673998675:web:95b403317ca67c8744d5a6"
+    apiKey: "AIzaSyA2jh-VnE0rVK6hcUvbiyn5ehyXPs-zlp8",
+    authDomain: "saathivarun.firebaseapp.com",
+    projectId: "saathivarun",
+    storageBucket: "saathivarun.firebasestorage.app",
+    messagingSenderId: "298407575937",
+    appId: "1:298407575937:web:255941fb225f71dd9f6880"
   };
-  const app = initializeApp(cfg), db = getDatabase(app);
-  Object.assign(window, { _fdb: db, _fref: ref, _fpush: push, _fset: set, _fon: onValue, _fq: query, _flast: limitToLast, _fbReady: true });
+
+  const app = initializeApp(cfg);
+  const db  = getFirestore(app);
+
+  // Expose to global scope for the main script
+  Object.assign(window, {
+    _fdb:        db,
+    _fcol:       collection,
+    _fadd:       addDoc,
+    _fsnap:      onSnapshot,
+    _fquery:     query,
+    _forderBy:   orderBy,
+    _flimit:     limit,
+    _fts:        serverTimestamp,
+    _fbReady:    true,
+    _fbMode:     'firestore'
+  });
   window.dispatchEvent(new Event('fbready'));
 </script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
@@ -3631,14 +3652,31 @@ function updateStats() {
   document.getElementById('mapForumCount').textContent = forums.filter(x=>x.lat&&x.lng).length;
 }
 function watch(path, cb) {
-  if (!window._fbReady) { window.addEventListener('fbready',()=>watch(path,cb),{once:true}); return; }
-  const q = window._fq(window._fref(window._fdb, path), window._flast(100));
-  window._fon(q, s=>{ const rows=[]; s.forEach(c=>rows.push(c.val())); cb(rows); });
+  if (!window._fbReady) { window.addEventListener('fbready', ()=>watch(path,cb), {once:true}); return; }
+  const q = window._fquery(
+    window._fcol(window._fdb, path),
+    window._forderBy('timestamp', 'asc'),
+    window._flimit(100)
+  );
+  window._fsnap(q, snapshot => {
+    const rows = [];
+    snapshot.forEach(doc => {
+      const d = doc.data();
+      // Firestore serverTimestamp comes back as a Timestamp object
+      rows.push({ ...d, timestamp: d.timestamp?.toMillis ? d.timestamp.toMillis() : (d.timestamp || Date.now()) });
+    });
+    cb(rows);
+  }, err => {
+    console.warn('Firebase watch error:', err.message);
+    cb([]);
+  });
 }
 function save(path, data) {
-  if (!window._fbReady) return Promise.reject('not ready');
-  const r = window._fpush(window._fref(window._fdb, path));
-  return window._fset(r, {...data, timestamp:Date.now()});
+  if (!window._fbReady) return Promise.reject('Firebase not ready');
+  return window._fadd(
+    window._fcol(window._fdb, path),
+    { ...data, timestamp: window._fts() }
+  );
 }
 function loadData() {
   watch('forum', rows=>{ forums=rows; combined(); renderForum(); renderFeed(); updateStats(); if(leafletMap) updateMapMarkers(); });
@@ -4249,4 +4287,3 @@ document.querySelectorAll('.module-card, .result-card, .team-card, .s-card, .s-q
 </script>
 </body>
 </html>
-
