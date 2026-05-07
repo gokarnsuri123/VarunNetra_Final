@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2818,37 +2817,26 @@ button { font: inherit; border: 0; background: none; cursor: pointer; }
           <div class="s-head-row">
             <div>
               <div class="s-kicker">Geo View</div>
-              <h2 data-lang="map-title">Problem Map</h2>
-              <p class="s-lead" data-lang="map-sub">Live complaints and forum posts are plotted together so you can see where problems concentrate.</p>
+              <h2 data-lang="map-title">Community Map</h2>
+              <p class="s-lead" data-lang="map-sub">Public forum posts are plotted on the satellite map so you can see where community water issues are being reported.</p>
             </div>
             <div class="s-chips">
-              <div class="s-chip">Live pins</div>
-              <div class="s-chip">Complaint + forum</div>
-              <div class="s-chip">Filterable view</div>
+              <div class="s-chip">Forum posts only</div>
+              <div class="s-chip">Live satellite view</div>
+              <div class="s-chip">Tap pin for details</div>
             </div>
           </div>
         </div>
         <div class="s-map-stats">
-          <div class="s-stat"><div class="s-stat-icon teal"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg></div><div class="s-stat-label">Total Pins</div><div class="s-stat-value" id="mapTotalCount">0</div><div class="s-stat-sub">All mapped items with usable coordinates.</div></div>
-          <div class="s-stat s-red"><div class="s-stat-icon red"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6"/></svg></div><div class="s-stat-label">Complaint Pins</div><div class="s-stat-value" id="mapComplaintCount">0</div><div class="s-stat-sub">Official reports with location data.</div></div>
-          <div class="s-stat s-blue"><div class="s-stat-icon blue"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4a2 2 0 00-2 2v18l4-4h14a2 2 0 002-2V4a2 2 0 00-2-2z"/></svg></div><div class="s-stat-label">Forum Pins</div><div class="s-stat-value" id="mapForumCount">0</div><div class="s-stat-sub">Community posts that include a location pin.</div></div>
-          <div class="s-stat s-amber"><div class="s-stat-icon amber"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div><div class="s-stat-label">Focus Area</div><div class="s-stat-value" style="font-size:1.75rem">GGM</div><div class="s-stat-sub">Optimized around Gurugram, Haryana.</div></div>
-        </div>
-        <div class="s-filter-bar">
-          <div class="s-filter-group">
-            <button class="s-filter-btn active" type="button" onclick="setMapFilter('all')" data-filter="all">All</button>
-            <button class="s-filter-btn" type="button" onclick="setMapFilter('complaint')" data-filter="complaint">Complaints</button>
-            <button class="s-filter-btn" type="button" onclick="setMapFilter('forum')" data-filter="forum">Forum</button>
-          </div>
-          <div class="s-chips">
-            <div class="s-chip">Tap any pin to see details</div>
-            <div class="s-chip">Map auto-fits results</div>
-          </div>
+          <div class="s-stat"><div class="s-stat-icon teal"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg></div><div class="s-stat-label">Forum Pins</div><div class="s-stat-value" id="mapForumCount">0</div><div class="s-stat-sub">Public posts with location data.</div></div>
+          <div class="s-stat"><div class="s-stat-icon" id="mapTotalCount" style="display:none">0</div></div>
+          <div class="s-stat s-blue"><div class="s-stat-icon blue"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4a2 2 0 00-2 2v18l4-4h14a2 2 0 002-2V4a2 2 0 00-2-2z"/></svg></div><div class="s-stat-label">Total Posts</div><div class="s-stat-value" id="forumTotalMap">0</div><div class="s-stat-sub">All forum posts including without pin.</div></div>
+          <div class="s-stat s-amber"><div class="s-stat-icon amber"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div><div class="s-stat-label">Focus Area</div><div class="s-stat-value" style="font-size:1.75rem">FBD</div><div class="s-stat-sub">Faridabad, Haryana.</div></div>
         </div>
         <div class="s-map-wrap"><div id="mapContainer"></div></div>
         <div class="s-map-note">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm1 15h-2v-2h2zm0-4h-2V7h2z"/></svg>
-          <span data-lang="map-hint">Tap on a pin to see problem details</span>
+          <span data-lang="map-hint">Tap on a pin to see community post details</span>
         </div>
       </div>
 
@@ -3638,18 +3626,19 @@ function showSSection(id) {
 ══════════════════════════════════════ */
 let complaints=[], forums=[], activity=[];
 function combined() {
+  // activity feed shows BOTH complaints and forum posts (for the carousel/latest reports)
   const c = complaints.map(x=>({...x,type:'complaint',location:x.address||x.location||'',message:x.details||x.problem||''}));
   const f = forums.map(x=>({...x,type:'forum',location:x.location||'',message:x.message||''}));
   activity = [...c,...f].sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
 }
 function updateStats() {
-  const mapped = activity.filter(x=>x.lat&&x.lng);
+  const mappedForum = forums.filter(x=>x.lat&&x.lng);
   document.getElementById('complaintCount').textContent = complaints.length;
   document.getElementById('forumCount').textContent = forums.length;
-  document.getElementById('mappedCount').textContent = mapped.length;
-  document.getElementById('mapTotalCount').textContent = mapped.length;
-  document.getElementById('mapComplaintCount').textContent = complaints.filter(x=>x.lat&&x.lng).length;
-  document.getElementById('mapForumCount').textContent = forums.filter(x=>x.lat&&x.lng).length;
+  document.getElementById('mappedCount').textContent = mappedForum.length;
+  if (document.getElementById('mapForumCount')) document.getElementById('mapForumCount').textContent = mappedForum.length;
+  if (document.getElementById('forumTotalMap')) document.getElementById('forumTotalMap').textContent = forums.length;
+  if (document.getElementById('mapTotalCount')) document.getElementById('mapTotalCount').textContent = mappedForum.length;
 }
 function watch(path, cb) {
   if (!window._fbReady) { window.addEventListener('fbready', ()=>watch(path,cb), {once:true}); return; }
@@ -3659,11 +3648,16 @@ function watch(path, cb) {
     window._flimit(100)
   );
   window._fsnap(q, snapshot => {
+    // Skip snapshots that include pending local writes (hasPendingWrites)
+    // to avoid double-rendering with our optimistic update
     const rows = [];
     snapshot.forEach(doc => {
+      if (doc.metadata && doc.metadata.hasPendingWrites) return; // skip pending
       const d = doc.data();
-      // Firestore serverTimestamp comes back as a Timestamp object
-      rows.push({ ...d, timestamp: d.timestamp?.toMillis ? d.timestamp.toMillis() : (d.timestamp || Date.now()) });
+      const ts = d.timestamp?.toMillis
+        ? d.timestamp.toMillis()
+        : (typeof d.timestamp === 'number' ? d.timestamp : Date.now());
+      rows.push({ ...d, timestamp: ts });
     });
     cb(rows);
   }, err => {
@@ -3697,17 +3691,28 @@ function renderFeed() {
     track.innerHTML = `<div class="s-slide"><div class="s-slide-inner"><div class="s-empty"><div class="s-empty-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4a2 2 0 00-2 2v18l4-4h14a2 2 0 002-2V4a2 2 0 00-2-2z"/></svg></div><h4>${esc(t('empty-feed-title'))}</h4><p>${esc(t('empty-feed-sub'))}</p></div></div></div>`;
     dots.innerHTML=''; return;
   }
-  track.innerHTML = items.map(item=>`
+  track.innerHTML = items.map(item => {
+    // Complaints are private — hide name, phone, redact personal info
+    const isComplaint = item.type === 'complaint';
+    const displayName = isComplaint ? 'Private Report' : esc(item.name || 'Anonymous');
+    const displayMsg  = isComplaint
+      ? esc(item.problem || item.message || 'Water issue reported')
+      : esc(item.message || '');
+    const displayLoc  = isComplaint
+      ? esc(item.city || item.state || item.location?.split(',').slice(-2).join(',').trim() || 'Haryana')
+      : esc(item.location || 'Haryana');
+    return `
     <div class="s-slide"><div class="s-slide-inner">
       <div class="s-slide-type ${item.type}">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="${item.type==='complaint'?'M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6':'M20 2H4a2 2 0 00-2 2v18l4-4h14a2 2 0 002-2V4a2 2 0 00-2-2z'}"/></svg>
-        ${esc(t(item.type==='complaint'?'complaint-type':'forum-type'))}
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="${isComplaint?'M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6':'M20 2H4a2 2 0 00-2 2v18l4-4h14a2 2 0 002-2V4a2 2 0 00-2-2z'}"/></svg>
+        ${esc(t(isComplaint ? 'complaint-type' : 'forum-type'))}
       </div>
-      <div class="s-slide-name">${esc(item.name||'Anonymous')}</div>
-      <div class="s-slide-loc"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>${esc(item.location||'Gurugram')}</div>
-      <div class="s-slide-msg">${esc(item.message||'')}</div>
+      <div class="s-slide-name">${displayName}</div>
+      <div class="s-slide-loc"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>${displayLoc}</div>
+      <div class="s-slide-msg">${displayMsg}</div>
       <div class="s-slide-time">${esc(rel(item.timestamp))}</div>
-    </div></div>`).join('');
+    </div></div>`;
+  }).join('');
   dots.innerHTML = items.map((_,i)=>`<button class="s-dot${i===0?' active':''}" type="button" onclick="goToSlide(${i})"></button>`).join('');
   slide=0; updateCarousel();
 }
@@ -3757,17 +3762,41 @@ function setMapFilter(v) {
 }
 function initMap() {
   if (leafletMap || typeof L==='undefined') return;
-  leafletMap = L.map('mapContainer', { zoomControl: true }).setView([28.4089, 77.3178], 11);
-  // Dark tile that matches the VarunNetra UI
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/">CARTO</a>',
-    subdomains: 'abcd',
-    maxZoom: 19
-  }).addTo(leafletMap);
+  leafletMap = L.map('mapContainer', { zoomControl: true }).setView([28.4089, 77.3178], 12);
+
+  // Satellite base layer (ESRI World Imagery — free, no key needed)
+  const satellite = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    { attribution: 'Tiles © Esri — Source: Esri, Airbus DS, USGS, NGA, NASA, CGIAR, N Robinson, NCEAS, NLS, OS, NMA, Geodatastyrelsen, Rijkswaterstaat, GSA, Geoland, FEMA, Intermap and the GIS user community', maxZoom: 19 }
+  );
+
+  // Labels overlay on top of satellite
+  const labels = L.tileLayer(
+    'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png',
+    { attribution: '© OpenStreetMap contributors © CARTO', subdomains: 'abcd', maxZoom: 19, opacity: 0.9, pane: 'shadowPane' }
+  );
+
+  satellite.addTo(leafletMap);
+  labels.addTo(leafletMap);
+
   updateMapMarkers();
 }
 function markerIcon(type) {
-  return L.divIcon({className:'',html:`<div class="m-pin ${type==='complaint'?'c-pin':'f-pin'}"></div>`,iconSize:[14,14],iconAnchor:[7,7],popupAnchor:[0,-10]});
+  const isC = type === 'complaint';
+  const color = isC ? '#e84040' : '#2ac7b8';
+  const glow  = isC ? 'rgba(232,64,64,.5)' : 'rgba(42,199,184,.5)';
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+      width:18px;height:18px;border-radius:50%;
+      background:${color};
+      border:3px solid #fff;
+      box-shadow:0 0 0 3px ${glow}, 0 3px 10px rgba(0,0,0,.5);
+    "></div>`,
+    iconSize: [18,18],
+    iconAnchor: [9,9],
+    popupAnchor: [0,-12]
+  });
 }
 function popupHTML(item) {
   return `<div class="map-popup">
@@ -3782,16 +3811,17 @@ function updateMapMarkers() {
   if (!leafletMap || typeof L==='undefined') return;
   mapMarkers.forEach(m=>leafletMap.removeLayer(m));
   mapMarkers=[];
-  const rows = activity.filter(x=>x.lat&&x.lng).filter(x=>mapFilter==='all'||x.type===mapFilter);
+  // ONLY forum posts on the map — complaints are private
+  const rows = forums.filter(x=>x.lat&&x.lng);
   rows.forEach(item=>{
     const lat=parseFloat(item.lat), lng=parseFloat(item.lng);
     if (!isFinite(lat)||!isFinite(lng)) return;
-    const m = L.marker([lat,lng],{icon:markerIcon(item.type)}).addTo(leafletMap);
+    const m = L.marker([lat,lng],{icon:markerIcon('forum')}).addTo(leafletMap);
     m.bindPopup(popupHTML(item));
     mapMarkers.push(m);
   });
-  if (mapMarkers.length) { const g=L.featureGroup(mapMarkers); leafletMap.fitBounds(g.getBounds().pad(.16)); }
-  else leafletMap.setView([28.4089,77.3178],11);
+  if (mapMarkers.length) { const g=L.featureGroup(mapMarkers); leafletMap.fitBounds(g.getBounds().pad(.2)); }
+  else leafletMap.setView([28.4089,77.3178],12);
 }
 
 /* ══════════════════════════════════════
@@ -3899,33 +3929,90 @@ document.getElementById('complaintForm').addEventListener('submit', async e=>{
   e.preventDefault();
   if (!needGPS('complaint')) return;
   const btn = e.target.querySelector('.s-submit');
-  const data = Object.fromEntries(new FormData(e.target).entries());
+  const fd = new FormData(e.target);
+  const raw = Object.fromEntries(fd.entries());
+  // Normalize to exactly what combined() and the map need
+  const data = {
+    type: 'complaint',
+    name:     raw.name     || 'Anonymous',
+    phone:    raw.phone    || '',
+    address:  raw.address  || '',
+    location: raw.address  || '',
+    problem:  raw.problem  || '',
+    details:  raw.details  || '',
+    city:     raw.city     || '',
+    state:    raw.state    || '',
+    pin:      raw.pin      || '',
+    lat:      raw.lat      || document.getElementById('complaintLat').value || '',
+    lng:      raw.lng      || document.getElementById('complaintLng').value || '',
+  };
   setSubmitBtn(btn,'loading','btn-submit-complaint','complaint-success');
   try {
-    if (!data.lat||!data.lng) { setSubmitBtn(btn,'idle','btn-submit-complaint','complaint-success'); toast('info',t('need-coords')); return; }
-    fetch('https://script.google.com/macros/s/AKfycbyYXphQuCSBYYGQKQawzvK3juqA2V1DGoLo49XGn6F9fk_xeSLDlZLuGD8QyRxjHifH_w/exec',{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(()=>{});
-    await save('complaints',data);
+    if (!data.lat || !data.lng) {
+      setSubmitBtn(btn,'idle','btn-submit-complaint','complaint-success');
+      toast('info', t('need-coords')); return;
+    }
+    // Fire-and-forget Google Sheet backup
+    fetch('https://script.google.com/macros/s/AKfycbyYXphQuCSBYYGQKQawzvK3juqA2V1DGoLo49XGn6F9fk_xeSLDlZLuGD8QyRxjHifH_w/exec',
+      {method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(()=>{});
+    await save('complaints', data);
+    // Optimistically add to local state so UI updates instantly
+    complaints = [...complaints, {...data, timestamp: Date.now()}];
+    combined(); renderFeed(); updateStats(); if(leafletMap) updateMapMarkers();
     setSubmitBtn(btn,'success','btn-submit-complaint','complaint-success');
-    toast('success',t('complaint-success'));
-    setTimeout(()=>{ e.target.reset(); clearLocation('complaint'); setSubmitBtn(btn,'idle','btn-submit-complaint','complaint-success'); showSSection('forum'); },1600);
-  } catch(err) { console.error(err); setSubmitBtn(btn,'idle','btn-submit-complaint','complaint-success'); toast('error',t('complaint-error')); }
+    toast('success', t('complaint-success'));
+    setTimeout(()=>{
+      e.target.reset();
+      clearLocation('complaint');
+      setSubmitBtn(btn,'idle','btn-submit-complaint','complaint-success');
+      showSSection('map');
+    }, 1600);
+  } catch(err) {
+    console.error(err);
+    setSubmitBtn(btn,'idle','btn-submit-complaint','complaint-success');
+    toast('error', t('complaint-error'));
+  }
 });
 
 document.getElementById('forumForm').addEventListener('submit', async e=>{
   e.preventDefault();
   if (!needGPS('forum')) return;
   const btn = e.target.querySelector('.s-submit');
-  const data = Object.fromEntries(new FormData(e.target).entries());
+  const fd = new FormData(e.target);
+  const raw = Object.fromEntries(fd.entries());
   const fLat = document.getElementById('forumLat').value;
   const fLng = document.getElementById('forumLng').value;
+  const data = {
+    type:     'forum',
+    name:     raw.name     || 'Anonymous',
+    location: raw.location || '',
+    message:  raw.message  || '',
+    lat:      fLat || '',
+    lng:      fLng || '',
+  };
   setSubmitBtn(btn,'loading','btn-post','posted-success');
   try {
-    if (!fLat||!fLng) { setSubmitBtn(btn,'idle','btn-post','posted-success'); toast('info',t('need-coords')); return; }
-    await save('forum',{name:data.name,location:data.location,message:data.message,lat:fLat,lng:fLng});
+    if (!data.lat || !data.lng) {
+      setSubmitBtn(btn,'idle','btn-post','posted-success');
+      toast('info', t('need-coords')); return;
+    }
+    await save('forum', data);
+    // Optimistically add to local state so UI updates instantly
+    forums = [...forums, {...data, timestamp: Date.now()}];
+    combined(); renderForum(); renderFeed(); updateStats(); if(leafletMap) updateMapMarkers();
     setSubmitBtn(btn,'success','btn-post','posted-success');
-    toast('success',t('posted-success'));
-    setTimeout(()=>{ e.target.reset(); clearLocation('forum'); setSubmitBtn(btn,'idle','btn-post','posted-success'); },1600);
-  } catch(err) { console.error(err); setSubmitBtn(btn,'idle','btn-post','posted-success'); toast('error',t('forum-error')); }
+    toast('success', t('posted-success'));
+    setTimeout(()=>{
+      e.target.reset();
+      clearLocation('forum');
+      setSubmitBtn(btn,'idle','btn-post','posted-success');
+      showSSection('map');
+    }, 1600);
+  } catch(err) {
+    console.error(err);
+    setSubmitBtn(btn,'idle','btn-post','posted-success');
+    toast('error', t('forum-error'));
+  }
 });
 
 /* ══════════════════════════════════════
