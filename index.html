@@ -2888,6 +2888,7 @@ button { font: inherit; border: 0; background: none; cursor: pointer; }
 </div><!-- /app -->
 
 <!-- FIREBASE -->
+<!-- FIREBASE -->
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js';
   import {
@@ -2898,18 +2899,17 @@ button { font: inherit; border: 0; background: none; cursor: pointer; }
   } from 'https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js';
 
   const cfg = {
-    apiKey: "AIzaSyA2jh-VnE0rVK6hcUvbiyn5ehyXPs-zlp8",
-    authDomain: "saathivarun.firebaseapp.com",
-    projectId: "saathivarun",
-    storageBucket: "saathivarun.firebasestorage.app",
-    messagingSenderId: "298407575937",
-    appId: "1:298407575937:web:255941fb225f71dd9f6880"
+    apiKey: "AIzaSyBEYAM-s820pjuKT9GMJmdMvQhFtH0c4fA",
+    authDomain: "varunjii.firebaseapp.com",
+    projectId: "varunjii",
+    storageBucket: "varunjii.firebasestorage.app",
+    messagingSenderId: "807998939551",
+    appId: "1:807998939551:web:c513f376373ed4efaf5daa"
   };
 
   const app = initializeApp(cfg);
   const db  = getFirestore(app);
 
-  // Expose to global scope for the main script
   Object.assign(window, {
     _fdb:        db,
     _fcol:       collection,
@@ -2924,9 +2924,6 @@ button { font: inherit; border: 0; background: none; cursor: pointer; }
   });
   window.dispatchEvent(new Event('fbready'));
 </script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-
-<script>
 /* ══════════════════════════════════════
    CINEMATIC UNDERWATER INTRO — FINAL
 ══════════════════════════════════════ */
